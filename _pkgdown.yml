@@ -13,10 +13,10 @@ navbar:
     - github
   components:
     tutorial:
-      text: Introductory tutorial
+      text: Introduction
       href: articles/countsplit_tutorial.html
     scran:
-      text: Scran tutorial
+      text: Tutorial: selecting the number of clusters
       href: articles/scran_tutorial.html
     reference:
       text: Reference
@@ -29,5 +29,5 @@ reference:
   desc: ~
   contents:
   - countsplit
-  - cm
-  - pbmc.counts
+  - datathin
+  - multithin

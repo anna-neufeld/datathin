@@ -1,3 +1,4 @@
+#' @importFrom stats rbinom
 poissplit <- function(data, epsilon) {
   #Convert vectors to matrices for consistent processing later
   dmat <- as.matrix(data)
@@ -11,6 +12,7 @@ poissplit <- function(data, epsilon) {
   return(list(Xtr = X, Xte = Y))
 }
 
+#' @importFrom VGAM rbetabinom
 nbsplit <- function(data, epsilon, b) {
   #Convert vectors to matrices for consistent processing later
   dmat <- as.matrix(data)
@@ -29,6 +31,7 @@ nbsplit <- function(data, epsilon, b) {
   return(list(Xtr = X, Xte = Y))
 }
 
+#' @importFrom stats rnorm
 normsplit <- function(data, epsilon, sigma) {
   #Convert vectors to matrices for consistent processing later
   dmat <- as.matrix(data)
@@ -47,6 +50,7 @@ normsplit <- function(data, epsilon, sigma) {
   return(list(Xtr = X, Xte = Y))
 }
 
+#' @importFrom stats rhyper
 binomsplit <- function(data, epsilon, pop) {
   #Convert vectors to matrices for consistent processing later
   dmat <- as.matrix(data)
@@ -70,6 +74,7 @@ binomsplit <- function(data, epsilon, pop) {
   return(list(Xtr = X, Xte = Y))
 }
 
+#' @importFrom stats beta
 gammasplit <- function(data, epsilon, shape) {
   #Convert vectors to matrices for consistent processing later
   dmat <- as.matrix(data)
@@ -88,7 +93,19 @@ gammasplit <- function(data, epsilon, shape) {
   return(list(Xtr = X, Xte = Y))
 }
 
-ccsplit <- function(data, family, epsilon=0.5, arg=NULL) {
+#' Takes a dataset (scalar, vector, or matrix???) and returns a training set and a test set that sum to the original data matrix. 
+#' 
+#' 
+#' @export
+#' 
+#' @param X A scalar, vector, or matrix of data. 
+#' @param family The name of the distribution of the data. Options are "poisson", "negative binomial", "normal" (equivalently "gaussian),
+#' "binomial", "exponential", or "gamma". 
+#' @param epsilon The tuning parameter for thinning; must be between 0 and 1. Larger values correspond to more information 
+#' in the training set and less in the test set.
+#' @param arg The extra parameter that must be known in order to split. Not needed for Poisson, but needed for all other distributions.
+#' Should be a scalar or should match dimensions of X. 
+datathin <- function(data, family, epsilon=0.5, arg=NULL) {
   if (family == "poisson") {
     poissplit(data, epsilon)
   } else if (family == "negative binomial") {
@@ -102,11 +119,23 @@ ccsplit <- function(data, family, epsilon=0.5, arg=NULL) {
   } else if (family == "gamma") {
     gammasplit(data, epsilon, arg)
   } else if (family == "chi-squared") {
+    ### question from Anna-- doesn't this not work?? 
     gammasplit(data, epsilon, arg/2)
   }
 }
 
-cccv <- function(data, family, nfolds=5, arg=NULL) {
+#' Takes a dataset (scalar, vector, or matrix???) and returns multiple folds of data that sum to the original data matrix. 
+#' 
+#' 
+#' @export
+#' 
+#' @param X A scalar, vector, or matrix of data. 
+#' @param family The name of the distribution of the data. Options are "poisson", "negative binomial", "normal" (equivalently "gaussian),
+#' "binomial", "exponential", or "gamma". 
+#' @param nfolds The number of folds to create from the data.
+#' @param arg The extra parameter that must be known in order to split. Not needed for Poisson, but needed for all other distributions.
+#' Should be a scalar or should match dimensions of X. 
+multithin <- function(data, family, nfolds=5, arg=NULL) {
   family2 <- family
   arg2 <- arg
   if (family == "exponential") {
@@ -117,7 +146,7 @@ cccv <- function(data, family, nfolds=5, arg=NULL) {
   resdat <- data
   for (i in 1:(nfolds-1)) {
     epsfold <- 1/(nfolds - i + 1)
-    temp <- ccsplit(resdat, family2, epsfold, arg2)
+    temp <- datathin(resdat, family2, epsfold, arg2)
     
     output <- append(output, list(i = temp$Xtr))
     resdat <- temp$Xte

@@ -1,9 +1,9 @@
 ---
-title: "Tutorial: differential expression analysis on single cell RNA-seq data" 
+title: "Introduction" 
 output: rmarkdown::html_vignette
 bibliography: latent.bib
 vignette: >
-  %\VignetteIndexEntry{"Tutorial: differential expression analysis on single cell RNA-seq data"}
+  %\VignetteIndexEntry{"Tutorial: introduction"}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,12 +15,14 @@ knitr::opts_chunk$set(
 knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
 ```
 
-In this tutorial, we use two simple simulated data sets to demonstrate how to use the countsplit package and base R functions (e.g. glm, kmeans) to cluster and test for differential expression in scRNA-seq data. See our other tutorials on this website to learn how to integrate the countsplit package into three existing scRNA-seq data analysis workflows in R: `Seurat`, `scran`, and `monocle3`.
-.
-We start by loading the packages we will be working with. Make sure that ``remotes`` is installed by running ``install.packages("remotes")``, then type
+In this tutorial, we show how to split random variables from all different families.
+
+Question from Anna- how redundant is this. 
+
+Start by installing the package. 
 
 ```{r,eval=FALSE}
-remotes::install_github("anna-neufeld/countsplit")
+remotes::install_github("anna-neufeld/datathin")
 ```
 
 ```{r, message=FALSE}

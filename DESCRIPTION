@@ -1,5 +1,5 @@
 Package: datathin
-Title: Splitting a random variable or a matrix of random variables into independent training and test components. 
+Title: Splitting a random variable or a matrix of random variables into independent training and test components 
 Version: 1.0
 Authors@R: 
     person("Anna", "Neufeld", , "aneufeld@uw.edu", role = c("aut", "cre"))
