@@ -2,7 +2,7 @@ Package: datathin
 Title: Splitting a random variable or a matrix of random variables into independent training and test components. 
 Version: 1.0
 Authors@R: 
-    person("Anna", "Neufeld", , "aneufeld@uw.edu", role = c("aut", "cre")),
+    person("Anna", "Neufeld", , "aneufeld@uw.edu", role = c("aut", "cre"))
     person("Ameer", "Dharamshi", , "adharams@uw.edu", role = c("aut", "cre"))
 Description: Implements the data thinning methodology from the paper "Data thinning for convolution-closed distributions" (Neufeld et al., 2023). 
 License: MIT + file LICENSE
