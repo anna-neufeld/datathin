@@ -6,9 +6,8 @@ navbar:
   structure:
     left:
     - tutorial
-    - seurat
-    - scran 
-    - monocle3
+    - model evaluation
+    - testing for a difference between clusters 
     - reference
     right:
     - github
@@ -22,9 +21,6 @@ navbar:
     scran:
       text: Scran tutorial
       href: articles/scran_tutorial.html
-    monocle3:
-      text: Monocle3 tutorial
-      href: articles/monocle3_tutorial.html
     reference:
       text: Reference
       href: reference/index.html
