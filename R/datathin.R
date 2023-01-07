@@ -61,12 +61,6 @@ binomsplit <- function(data, epsilon, pop) {
   if (is.null(pop)) {
     print("Binomial population missing.")
   }
-  if (
-    (epsilon*pop %% 1) != 0 | 
-    ((1-epsilon)*pop %% 1) != 0
-    ) {
-    print("Hypergeometric counts are non-integers.")
-  }
   
   X[] <- rhyper(n, epsilon*pop, (1-epsilon)*pop, dmat)
   Y <- dmat - X
@@ -113,14 +107,17 @@ datathin <- function(data, family, epsilon=0.5, arg=NULL) {
   } else if (family %in% c("normal", "gaussian")) {
     normsplit(data, epsilon, arg)
   } else if (family == "binomial") {
-    binomsplit(data, epsilon, arg)
+    if ((epsilon*arg %% 1) != 0 | ((1-epsilon)*arg %% 1) != 0) {
+      print("Hypergeometric counts are non-integers.")
+    } else {
+      binomsplit(data, epsilon, arg)
+    }
   } else if (family == "exponential") {
     gammasplit(data, epsilon, 1)
   } else if (family == "gamma") {
     gammasplit(data, epsilon, arg)
-  } else if (family == "chi-squared") {
-    ### question from Anna-- doesn't this not work?? 
-    gammasplit(data, epsilon, arg/2)
+  } else {
+    print("Invalid family argument")
   }
 }
 
@@ -133,9 +130,15 @@ datathin <- function(data, family, epsilon=0.5, arg=NULL) {
 #' @param family The name of the distribution of the data. Options are "poisson", "negative binomial", "normal" (equivalently "gaussian),
 #' "binomial", "exponential", or "gamma". 
 #' @param nfolds The number of folds to create from the data.
+#' @param eps The tuning paramter vector for thinning; must be non-negative, sum to 1, and have the same length as the value of nfolds. 
+#' Controls the allocation of information between folds. If omitted, an equal allocation among folds is assumed.
 #' @param arg The extra parameter that must be known in order to split. Not needed for Poisson, but needed for all other distributions.
 #' Should be a scalar or should match dimensions of X. 
-multithin <- function(data, family, nfolds=5, arg=NULL) {
+multithin <- function(data, family, nfolds=5, eps=NULL, arg=NULL) {
+  if (is.null(eps)) {
+    eps <- rep(1/nfolds, nfolds)
+  }
+ 
   family2 <- family
   arg2 <- arg
   if (family == "exponential") {
@@ -145,7 +148,7 @@ multithin <- function(data, family, nfolds=5, arg=NULL) {
   output <- list()
   resdat <- data
   for (i in 1:(nfolds-1)) {
-    epsfold <- 1/(nfolds - i + 1)
+    epsfold <- eps[i]/sum(eps[i:length(eps)]) 
     temp <- datathin(resdat, family2, epsfold, arg2)
     
     output <- append(output, list(i = temp$Xtr))
