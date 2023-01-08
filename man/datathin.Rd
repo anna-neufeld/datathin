@@ -7,6 +7,8 @@
 datathin(data, family, epsilon = 0.5, arg = NULL)
 }
 \arguments{
+\item{data}{A scalar, vector, or matrix of data.}
+
 \item{family}{The name of the distribution of the data. Options are "poisson", "negative binomial", "normal" (equivalently "gaussian),
 "binomial", "exponential", or "gamma".}
 
@@ -15,8 +17,6 @@ in the training set and less in the test set.}
 
 \item{arg}{The extra parameter that must be known in order to split. Not needed for Poisson, but needed for all other distributions.
 Should be a scalar or should match dimensions of X.}
-
-\item{X}{A scalar, vector, or matrix of data.}
 }
 \description{
 Takes a dataset (scalar, vector, or matrix???) and returns a training set and a test set that sum to the original data matrix.

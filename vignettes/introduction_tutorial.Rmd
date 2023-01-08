@@ -1,0 +1,88 @@
+---
+title: "Introductory tutorial" 
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introductory tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE
+)
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+```
+
+Welcome to the `datathin` package. In this tutorial, we will show how random variables from different distributions can be split into independent training at test components. For more details, see our preprint. For information on how to use `datathin` for tasks such as model evalation or inference after model selection, see our forthcoming tutorials. 
+
+To get started, ensure that you have downloaded and loaded the package:
+
+```{r,eval=FALSE}
+remotes::install_github("anna-neufeld/datathin")
+```
+
+```{r}
+library(datathin)
+```
+
+
+# Poisson 
+
+We start by considering Poisson random variables. This is a simple case, as the Poisson distribution has only one parameter.
+
+We first generate a vector of 10,000 $Poisson(7)$ random variables. 
+
+```{r}
+set.seed(1)
+dat <- rpois(10000, 7)
+```
+
+```{r}
+dat.thin <- datathin(dat, family="poisson", epsilon=0.3)
+dat.train <- dat.thin$Xtr
+dat.test <- dat.thin$Xte
+```
+
+We now verify several properties of the data thinning operation.
+
+First, we verify that the expected value of dat.train is $0.3 \times 7$ and the expected value of dat.test is $0.7 \times 7$. 
+
+```{r, hold=TRUE}
+mean(dat)
+mean(dat.train)
+0.3*7
+mean(dat.test)
+0.7*7
+```
+
+We next verify that `dat.train` and `dat.test` are independent, and that they sum to `dat`.
+
+```{r}
+all.equal(dat, as.numeric(dat.train+dat.test))
+cor(dat.train, dat.test)
+```
+
+
+# Exponential
+
+We next consider exponential random variables. These are also simple, as the distribution only has one parameter. 
+
+```{r}
+set.seed(2)
+dat <- rexp(10000, rate=0.3)
+```
+
+For this distribution, we demonstrate how to create multiple indendent folds of data using the ``multithin`` function. 
+
+```{r}
+```
+
+# Normal distribution
+
+We now show an example of thinning the normal distribution. This is slightly more complicated, as the $N(\mu, \sigma^2)$ distribution has two parameters, and in order to apply data thinning the parameter $\sigma^2$ must be known. 
+
+We start by generating data from a $N(5, 2)$ distribution and applying ``datathin`` with $\epsilon = 0.5$. 
+
+
+# Negative binomial, gamma, and binomial examples coming soon!
