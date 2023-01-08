@@ -1,3 +1,7 @@
+#' Internal function for thinning the Poisson distribution.
+#' @param data dataset (assumed to follow a Poisson distribution)
+#' @param epsilon thinning parameter (scalar between 0 and 1).
+#' 
 #' @importFrom stats rbinom
 poissplit <- function(data, epsilon) {
   #Convert vectors to matrices for consistent processing later
@@ -12,6 +16,10 @@ poissplit <- function(data, epsilon) {
   return(list(Xtr = X, Xte = Y))
 }
 
+#' Internal function for thinning the negative binomial distribution.
+#' @param data data (assumed to follow a negative binomial distribution).
+#' @param epsilon thinning parmaeter (scalar between 0 and 1)
+#' @param b the negative binomial overdispersion parameter. Must be a scalar, or dimensions must match that of dat. 
 #' @importFrom VGAM rbetabinom
 nbsplit <- function(data, epsilon, b) {
   #Convert vectors to matrices for consistent processing later
@@ -68,7 +76,7 @@ binomsplit <- function(data, epsilon, pop) {
   return(list(Xtr = X, Xte = Y))
 }
 
-#' @importFrom stats beta
+#' @importFrom stats rbeta
 gammasplit <- function(data, epsilon, shape) {
   #Convert vectors to matrices for consistent processing later
   dmat <- as.matrix(data)
@@ -87,12 +95,12 @@ gammasplit <- function(data, epsilon, shape) {
   return(list(Xtr = X, Xte = Y))
 }
 
-#' Takes a dataset (scalar, vector, or matrix???) and returns a training set and a test set that sum to the original data matrix. 
+#' Takes a dataset (scalar, vector, or matrix) and returns a training set and a test set that sum to the original data matrix. 
 #' 
 #' 
 #' @export
 #' 
-#' @param X A scalar, vector, or matrix of data. 
+#' @param data A scalar, vector, or matrix of data. 
 #' @param family The name of the distribution of the data. Options are "poisson", "negative binomial", "normal" (equivalently "gaussian),
 #' "binomial", "exponential", or "gamma". 
 #' @param epsilon The tuning parameter for thinning; must be between 0 and 1. Larger values correspond to more information 
@@ -121,12 +129,12 @@ datathin <- function(data, family, epsilon=0.5, arg=NULL) {
   }
 }
 
-#' Takes a dataset (scalar, vector, or matrix???) and returns multiple folds of data that sum to the original data matrix. 
+#' Takes a dataset (scalar, vector, or matrix) and returns multiple folds of data that sum to the original data matrix. 
 #' 
 #' 
 #' @export
 #' 
-#' @param X A scalar, vector, or matrix of data. 
+#' @param data A scalar, vector, or matrix of data. 
 #' @param family The name of the distribution of the data. Options are "poisson", "negative binomial", "normal" (equivalently "gaussian),
 #' "binomial", "exponential", or "gamma". 
 #' @param nfolds The number of folds to create from the data.
