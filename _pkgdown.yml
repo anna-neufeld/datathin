@@ -5,19 +5,18 @@ template:
 navbar:
   structure:
     left:
-    - tutorial
-    - model evaluation
-    - testing for a difference between clusters 
+    - Home
+    - Introductory tutorial
     - reference
     right:
     - github
   components:
-    tutorial:
-      text: Introduction
-      href: articles/countsplit_tutorial.html
-    scran:
-      text: Tutorial: selecting the number of clusters
-      href: articles/scran_tutorial.html
+    Home:
+      text: Welcome
+      href: index.html
+    Introductory tutorial:
+      text: Introductory tutorial
+      href: articles/introduction_tutorial.html
     reference:
       text: Reference
       href: reference/index.html
@@ -25,9 +24,8 @@ navbar:
 
 
 reference:
-- title: Primary user functions
+- title: User functions
   desc: ~
   contents:
-  - countsplit
   - datathin
   - multithin
