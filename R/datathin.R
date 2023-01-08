@@ -58,7 +58,7 @@ normsplit <- function(data, epsilon, sigma) {
     return()
   }
   
-  X[] <- rnorm(n, mean=epsilon*X, sd=sqrt(epsilon*(1-epsilon))*sigma)
+  X[] <- rnorm(n, mean=epsilon*dmat, sd=sqrt(epsilon*(1-epsilon))*sigma)
   Y <- dmat - X
   
   return(list(Xtr = X, Xte = Y))

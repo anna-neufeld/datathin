@@ -70,19 +70,58 @@ We next consider exponential random variables. These are also simple, as the dis
 
 ```{r}
 set.seed(2)
-dat <- rexp(10000, rate=0.3)
+dat <- rexp(100000, rate=1/3)
+mean(dat)
 ```
 
 For this distribution, we demonstrate how to create multiple indendent folds of data using the ``multithin`` function. 
 
 ```{r}
+folds <- multithin(dat, family="exponential", nfolds=5)
 ```
+
+Here, `folds` is a list with 5 elements. Each list element stores one fold of data, which in this case means a vector of length 1000.
+
+```{r}
+length(folds)
+length(folds[[1]])
+```
+
+We can verify that, for $m=1,\ldots,5$, the $m$th fold of data is independent of the sum of the remaining folds, and that it has mean $\frac{1}{5} \times 3$, while the remainder has mean $\frac{4}{5} \times 3$.
+
+```{r}
+for (m in 1:5) {
+  print("-------")
+  print(paste("fold", m))
+  
+  dat.test <- folds[[m]]
+  dat.train <- dat - folds[[m]]
+  
+  print(c(1/5*mean(dat), mean(dat.test)))
+  print(c(4/5*mean(dat), mean(dat.train)))
+
+  print(as.numeric(cor(dat.test, dat.train)))
+}
+```
+
 
 # Normal distribution
 
 We now show an example of thinning the normal distribution. This is slightly more complicated, as the $N(\mu, \sigma^2)$ distribution has two parameters, and in order to apply data thinning the parameter $\sigma^2$ must be known. 
 
-We start by generating data from a $N(5, 2)$ distribution and applying ``datathin`` with $\epsilon = 0.5$. 
+We start by generating data from a $N(5, 2)$ distribution and applying ``datathin`` with $\epsilon = 0.5$. This time, we let our dataset `dat` be a matrix with dimensions $1000 \times 10$. 
+
+```{r}
+dat <- matrix(rnorm(1000*10, mean=5, sd=sqrt(2)), nrow=1000)
+```
+
+We first apply data thinning assuming that $\sigma^2=2$ is known. This is passed in as the ``arg`` parameter. 
+
+```{r}
+res <- datathin(dat, family="normal", epsilon=0.5, arg=2)
+dat.train <- res$Xtr
+dat.test <- res$Xte
+```
 
 
 # Negative binomial, gamma, and binomial examples coming soon!
