@@ -2,7 +2,7 @@
 % Please edit documentation in R/datathin.R
 \name{multithin}
 \alias{multithin}
-\title{Takes a dataset (scalar, vector, or matrix???) and returns multiple folds of data that sum to the original data matrix.}
+\title{Takes a dataset (scalar, vector, or matrix) and returns multiple folds of data that sum to the original data matrix.}
 \usage{
 multithin(data, family, nfolds = 5, eps = NULL, arg = NULL)
 }
@@ -21,5 +21,5 @@ Controls the allocation of information between folds. If omitted, an equal alloc
 Should be a scalar or should match dimensions of X.}
 }
 \description{
-Takes a dataset (scalar, vector, or matrix???) and returns multiple folds of data that sum to the original data matrix.
+Takes a dataset (scalar, vector, or matrix) and returns multiple folds of data that sum to the original data matrix.
 }

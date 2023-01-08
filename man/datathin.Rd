@@ -2,7 +2,7 @@
 % Please edit documentation in R/datathin.R
 \name{datathin}
 \alias{datathin}
-\title{Takes a dataset (scalar, vector, or matrix???) and returns a training set and a test set that sum to the original data matrix.}
+\title{Takes a dataset (scalar, vector, or matrix) and returns a training set and a test set that sum to the original data matrix.}
 \usage{
 datathin(data, family, epsilon = 0.5, arg = NULL)
 }
@@ -19,5 +19,5 @@ in the training set and less in the test set.}
 Should be a scalar or should match dimensions of X.}
 }
 \description{
-Takes a dataset (scalar, vector, or matrix???) and returns a training set and a test set that sum to the original data matrix.
+Takes a dataset (scalar, vector, or matrix) and returns a training set and a test set that sum to the original data matrix.
 }

@@ -1,6 +1,8 @@
 #' Internal function for thinning the Poisson distribution.
 #' @param data dataset (assumed to follow a Poisson distribution)
 #' @param epsilon thinning parameter (scalar between 0 and 1).
+#' @keywords internal
+#' @noRd
 #' 
 #' @importFrom stats rbinom
 poissplit <- function(data, epsilon) {
@@ -17,6 +19,8 @@ poissplit <- function(data, epsilon) {
 }
 
 #' Internal function for thinning the negative binomial distribution.
+#' @keywords internal
+#' @noRd
 #' @param data data (assumed to follow a negative binomial distribution).
 #' @param epsilon thinning parmaeter (scalar between 0 and 1)
 #' @param b the negative binomial overdispersion parameter. Must be a scalar, or dimensions must match that of dat. 
@@ -40,6 +44,8 @@ nbsplit <- function(data, epsilon, b) {
 }
 
 #' @importFrom stats rnorm
+#' @keywords internal
+#' @noRd
 normsplit <- function(data, epsilon, sigma) {
   #Convert vectors to matrices for consistent processing later
   dmat <- as.matrix(data)
@@ -59,6 +65,8 @@ normsplit <- function(data, epsilon, sigma) {
 }
 
 #' @importFrom stats rhyper
+#' @keywords internal
+#' @noRd
 binomsplit <- function(data, epsilon, pop) {
   #Convert vectors to matrices for consistent processing later
   dmat <- as.matrix(data)
@@ -77,6 +85,7 @@ binomsplit <- function(data, epsilon, pop) {
 }
 
 #' @importFrom stats rbeta
+#' @noRd
 gammasplit <- function(data, epsilon, shape) {
   #Convert vectors to matrices for consistent processing later
   dmat <- as.matrix(data)
