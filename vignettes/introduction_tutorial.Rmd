@@ -56,7 +56,7 @@ mean(dat.test)
 0.7*7
 ```
 
-We next verify that `dat.train` and `dat.test` are independent, and that they sum to `dat`.
+We next verify that `dat.train` and `dat.test` are independent, and that they sum to `dat`. We note that throughout this document, we use small empirical correlations as evidence of independence. 
 
 ```{r}
 all.equal(dat, as.numeric(dat.train+dat.test))
@@ -115,13 +115,69 @@ We start by generating data from a $N(5, 2)$ distribution and applying ``datathi
 dat <- matrix(rnorm(1000*10, mean=5, sd=sqrt(2)), nrow=1000)
 ```
 
-We first apply data thinning assuming that $\sigma^2=2$ is known. This is passed in as the ``arg`` parameter. 
+We first apply data thinning assuming that $\sigma^2=2$ is known. This is passed in as the ``arg`` parameter. We can see that, after applying data thinning, each column of the training set is independent of each column in the test set (once again, we are using small empirical correlations as evidence of independence).
 
 ```{r}
 res <- datathin(dat, family="normal", epsilon=0.5, arg=2)
 dat.train <- res$Xtr
 dat.test <- res$Xte
+for (j in 1:ncol(dat.train)) {
+  print(cor(dat.train[,j], dat.test[,j]))
+}
+```
+
+The parameter `arg` must either be a scalar (in which case it is assumed that all elements of the data matrix have the same value of $\sigma^2$), or its dimensions must match that of the data.
+
+We now explore the impact of using the "wrong" value of $\sigma^2$ while splitting. We generate a dataset with $10,000$ rows and 
+
+```{r}
 ```
 
 
-# Negative binomial, gamma, and binomial examples coming soon!
+# Negative binomial
+
+We generate data from a negative binomial distribution. We use the mean and overdispersion parameterization of the negative binomial distribution. 
+
+```{r}
+dat <- rnbinom(10000, size=7, mu = 6)
+res <- datathin(dat, family="negative binomial", epsilon = 0.2, arg=7)
+dat.train <- res$Xtr
+dat.test <- res$Xte
+0.2*6
+mean(dat.train)
+0.8*6
+mean(dat.test)
+as.numeric(cor(dat.train, dat.test))
+```
+
+# Gamma 
+
+We verify the same properties as above, assuming that the shape parameter is known. 
+
+```{r}
+dat <- rgamma(10000, shape=12, rate=2)
+mean(dat)
+res <- datathin(dat, family="gamma", epsilon = 0.5, arg=12)
+dat.train <- res$Xtr
+dat.test <- res$Xte
+mean(dat.train)
+mean(dat.test)
+as.numeric(cor(dat.train, dat.test))
+```
+
+
+
+# Binomial 
+
+We verify the same properties as above, assuming that the size parameter is known. Note that, if we want to use $\epsilon=0.5$, the size parameter of the binomial distribution must be an even number. 
+
+```{r}
+dat <- rbinom(10000, 16, 0.25)
+mean(dat)
+res <- datathin(dat, family="binomial", epsilon = 0.5, arg=16)
+dat.train <- res$Xtr
+dat.test <- res$Xte
+mean(dat.train)
+mean(dat.test)
+as.numeric(cor(dat.train, dat.test))
+```

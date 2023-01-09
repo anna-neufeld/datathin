@@ -28,6 +28,7 @@ poissplit <- function(data, epsilon) {
 nbsplit <- function(data, epsilon, b) {
   #Convert vectors to matrices for consistent processing later
   dmat <- as.matrix(data)
+  ps <- matrix(nrow=dim(dmat)[1], ncol=dim(dmat)[2])
   X <- matrix(nrow=dim(dmat)[1], ncol=dim(dmat)[2])
   Y <- matrix(nrow=dim(dmat)[1], ncol=dim(dmat)[2])
   n <- length(dmat)
@@ -37,12 +38,14 @@ nbsplit <- function(data, epsilon, b) {
     return()
   }
   
-  X[] <- VGAM::rbetabinom(n, X, epsilon*b, (1-epsilon)*b)
+  ps[] <- rbeta(n,epsilon*b,(1-epsilon)*b)
+  X[] <- rbinom(n, size=dmat, prob=ps)
   Y <- dmat - X
   
   return(list(Xtr = X, Xte = Y))
 }
 
+#' @param sigma The standard deviation- not the variance!
 #' @importFrom stats rnorm
 #' @keywords internal
 #' @noRd
@@ -122,7 +125,7 @@ datathin <- function(data, family, epsilon=0.5, arg=NULL) {
   } else if (family == "negative binomial") {
     nbsplit(data, epsilon, arg)
   } else if (family %in% c("normal", "gaussian")) {
-    normsplit(data, epsilon, arg)
+    normsplit(data, epsilon, sqrt(arg))
   } else if (family == "binomial") {
     if ((epsilon*arg %% 1) != 0 | ((1-epsilon)*arg %% 1) != 0) {
       print("Hypergeometric counts are non-integers.")
