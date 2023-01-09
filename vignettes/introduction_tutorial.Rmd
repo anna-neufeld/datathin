@@ -109,10 +109,11 @@ for (m in 1:5) {
 
 We now show an example of thinning the normal distribution. This is slightly more complicated, as the $N(\mu, \sigma^2)$ distribution has two parameters, and in order to apply data thinning the parameter $\sigma^2$ must be known. 
 
-We start by generating data from a $N(5, 2)$ distribution and applying ``datathin`` with $\epsilon = 0.5$. This time, we let our dataset `dat` be a matrix with dimensions $1000 \times 10$. 
+We start by generating data from a $N(5, 2)$ distribution and applying ``datathin`` with $\epsilon = 0.5$. This time, we let our dataset `dat` be a matrix with dimensions $10000 \times 10$. 
 
 ```{r}
-dat <- matrix(rnorm(1000*10, mean=5, sd=sqrt(2)), nrow=1000)
+set.seed(3)
+dat <- matrix(rnorm(10000*10, mean=5, sd=sqrt(2)), nrow=10000)
 ```
 
 We first apply data thinning assuming that $\sigma^2=2$ is known. This is passed in as the ``arg`` parameter. We can see that, after applying data thinning, each column of the training set is independent of each column in the test set (once again, we are using small empirical correlations as evidence of independence).
@@ -121,16 +122,37 @@ We first apply data thinning assuming that $\sigma^2=2$ is known. This is passed
 res <- datathin(dat, family="normal", epsilon=0.5, arg=2)
 dat.train <- res$Xtr
 dat.test <- res$Xte
-for (j in 1:ncol(dat.train)) {
-  print(cor(dat.train[,j], dat.test[,j]))
-}
+
+sapply(1:ncol(dat.train), function(u) cor(dat.train[,u], dat.test[,u]))
 ```
 
 The parameter `arg` must either be a scalar (in which case it is assumed that all elements of the data matrix have the same value of $\sigma^2$), or its dimensions must match that of the data.
 
-We now explore the impact of using the "wrong" value of $\sigma^2$ while splitting. We generate a dataset with $10,000$ rows and 
+We now explore the impact of using the "wrong" value of $\sigma^2$ while splitting. We generate a dataset with $100,000$ rows and $3$ columns. In the first column, the data are from a $N(5, 0.1)$ distribution. In the second column, they are from a $N(5,2)$ distribution. In the final column, they are from a $N(5,20)$ distribution. 
 
 ```{r}
+dat <- cbind(rnorm(100000, mean=5, sd=sqrt(0.1)),
+             rnorm(100000, mean=5, sd=sqrt(2)),
+             rnorm(100000, mean=5, sd=sqrt(20)))
+```
+
+First, we datathin but we incorrectly that all items in the matrix have $\sigma^2=2$. We see that we have negative correlation between the training and test sets in the first column (where we used a value of $\sigma^2$ that was too big), no correlation in the second column (where we used the correct value of $\sigma^2$(), and positive correlation in the last column (where we used a value of $\sigma^2$ that was too small). 
+
+```{r}
+res <- datathin(dat, family="normal", epsilon=0.5, arg=2)
+dat.train <- res$Xtr
+dat.test <- res$Xte
+sapply(1:ncol(dat.train), function(u) cor(dat.train[,u], dat.test[,u]))
+```
+
+To remedy the situation, we must let `arg` be a matrix that stores the correct $\sigma^2$ values.
+
+```{r}
+good_args <- cbind(rep(0.1, 100000), rep(2, 100000), rep(20,100000))
+res <- datathin(dat, family="normal", epsilon=0.5, arg=good_args)
+dat.train <- res$Xtr
+dat.test <- res$Xte
+sapply(1:ncol(dat.train), function(u) cor(dat.train[,u], dat.test[,u]))
 ```
 
 

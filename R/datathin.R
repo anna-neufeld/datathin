@@ -51,6 +51,7 @@ nbsplit <- function(data, epsilon, b) {
 #' @noRd
 normsplit <- function(data, epsilon, sigma) {
   #Convert vectors to matrices for consistent processing later
+  
   dmat <- as.matrix(data)
   X <- matrix(nrow=dim(dmat)[1], ncol=dim(dmat)[2])
   Y <- matrix(nrow=dim(dmat)[1], ncol=dim(dmat)[2])
@@ -61,8 +62,16 @@ normsplit <- function(data, epsilon, sigma) {
     return()
   }
   
+  
+  
+  
+  
   X[] <- rnorm(n, mean=epsilon*dmat, sd=sqrt(epsilon*(1-epsilon))*sigma)
   Y <- dmat - X
+  
+  cor(X[,1], Y[,1])
+  cor(X[,2], Y[,2])
+  cor(X[,3], Y[,3])
   
   return(list(Xtr = X, Xte = Y))
 }

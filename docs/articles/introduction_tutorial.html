@@ -180,35 +180,46 @@
 <h2 id="normal-distribution">Normal distribution<a class="anchor" aria-label="anchor" href="#normal-distribution"></a>
 </h2>
 <p>We now show an example of thinning the normal distribution. This is slightly more complicated, as the <span class="math inline">\(N(\mu, \sigma^2)\)</span> distribution has two parameters, and in order to apply data thinning the parameter <span class="math inline">\(\sigma^2\)</span> must be known.</p>
-<p>We start by generating data from a <span class="math inline">\(N(5, 2)\)</span> distribution and applying <code>datathin</code> with <span class="math inline">\(\epsilon = 0.5\)</span>. This time, we let our dataset <code>dat</code> be a matrix with dimensions <span class="math inline">\(1000 \times 10\)</span>.</p>
+<p>We start by generating data from a <span class="math inline">\(N(5, 2)\)</span> distribution and applying <code>datathin</code> with <span class="math inline">\(\epsilon = 0.5\)</span>. This time, we let our dataset <code>dat</code> be a matrix with dimensions <span class="math inline">\(10000 \times 10\)</span>.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">*</span><span class="fl">10</span>, mean<span class="op">=</span><span class="fl">5</span>, sd<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>, nrow<span class="op">=</span><span class="fl">1000</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span></span>
+<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">10000</span><span class="op">*</span><span class="fl">10</span>, mean<span class="op">=</span><span class="fl">5</span>, sd<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>, nrow<span class="op">=</span><span class="fl">10000</span><span class="op">)</span></span></code></pre></div>
 <p>We first apply data thinning assuming that <span class="math inline">\(\sigma^2=2\)</span> is known. This is passed in as the <code>arg</code> parameter. We can see that, after applying data thinning, each column of the training set is independent of each column in the test set (once again, we are using small empirical correlations as evidence of independence).</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/datathin.html">datathin</a></span><span class="op">(</span><span class="va">dat</span>, family<span class="op">=</span><span class="st">"normal"</span>, epsilon<span class="op">=</span><span class="fl">0.5</span>, arg<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">dat.train</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">$</span><span class="va">Xtr</span></span>
 <span><span class="va">dat.test</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">$</span><span class="va">Xte</span></span>
-<span><span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">dat.train</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">dat.train</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span>, <span class="va">dat.test</span><span class="op">[</span>,<span class="va">j</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span><span class="co">## [1] 0.01877596</span></span>
-<span><span class="co">## [1] -0.02760103</span></span>
-<span><span class="co">## [1] -0.02486029</span></span>
-<span><span class="co">## [1] 0.02264748</span></span>
-<span><span class="co">## [1] -0.03686756</span></span>
-<span><span class="co">## [1] -0.01298972</span></span>
-<span><span class="co">## [1] 0.05155193</span></span>
-<span><span class="co">## [1] 0.0112386</span></span>
-<span><span class="co">## [1] -0.01451494</span></span>
-<span><span class="co">## [1] 0.02207523</span></span></code></pre></div>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">dat.train</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">u</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">dat.train</span><span class="op">[</span>,<span class="va">u</span><span class="op">]</span>, <span class="va">dat.test</span><span class="op">[</span>,<span class="va">u</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">##  [1] -0.0054039893  0.0170518402  0.0092961249 -0.0145605012  0.0209949092</span></span>
+<span><span class="co">##  [6] -0.0004228364  0.0055731047  0.0219910992 -0.0109886560  0.0005400666</span></span></code></pre></div>
 <p>The parameter <code>arg</code> must either be a scalar (in which case it is assumed that all elements of the data matrix have the same value of <span class="math inline">\(\sigma^2\)</span>), or its dimensions must match that of the data.</p>
-<p>We now explore the impact of using the “wrong” value of <span class="math inline">\(\sigma^2\)</span> while splitting. We generate a dataset with <span class="math inline">\(10,000\)</span> rows and</p>
+<p>We now explore the impact of using the “wrong” value of <span class="math inline">\(\sigma^2\)</span> while splitting. We generate a dataset with <span class="math inline">\(100,000\)</span> rows and <span class="math inline">\(3\)</span> columns. In the first column, the data are from a <span class="math inline">\(N(5, 0.1)\)</span> distribution. In the second column, they are from a <span class="math inline">\(N(5,2)\)</span> distribution. In the final column, they are from a <span class="math inline">\(N(5,20)\)</span> distribution.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">100000</span>, mean<span class="op">=</span><span class="fl">5</span>, sd<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">0.1</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>             <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">100000</span>, mean<span class="op">=</span><span class="fl">5</span>, sd<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>             <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">100000</span>, mean<span class="op">=</span><span class="fl">5</span>, sd<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">20</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>First, we datathin but we incorrectly that all items in the matrix have <span class="math inline">\(\sigma^2=2\)</span>. We see that we have negative correlation between the training and test sets in the first column (where we used a value of <span class="math inline">\(\sigma^2\)</span> that was too big), no correlation in the second column (where we used the correct value of <span class="math inline">\(\sigma^2\)</span>(), and positive correlation in the last column (where we used a value of <span class="math inline">\(\sigma^2\)</span> that was too small).</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/datathin.html">datathin</a></span><span class="op">(</span><span class="va">dat</span>, family<span class="op">=</span><span class="st">"normal"</span>, epsilon<span class="op">=</span><span class="fl">0.5</span>, arg<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">dat.train</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">$</span><span class="va">Xtr</span></span>
+<span><span class="va">dat.test</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">$</span><span class="va">Xte</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">dat.train</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">u</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">dat.train</span><span class="op">[</span>,<span class="va">u</span><span class="op">]</span>, <span class="va">dat.test</span><span class="op">[</span>,<span class="va">u</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## [1] -0.9051753032  0.0001091388  0.8181117290</span></span></code></pre></div>
+<p>To remedy the situation, we must let <code>arg</code> be a matrix that stores the correct <span class="math inline">\(\sigma^2\)</span> values.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">good_args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">100000</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">100000</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">20</span>,<span class="fl">100000</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/datathin.html">datathin</a></span><span class="op">(</span><span class="va">dat</span>, family<span class="op">=</span><span class="st">"normal"</span>, epsilon<span class="op">=</span><span class="fl">0.5</span>, arg<span class="op">=</span><span class="va">good_args</span><span class="op">)</span></span>
+<span><span class="va">dat.train</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">$</span><span class="va">Xtr</span></span>
+<span><span class="va">dat.test</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">$</span><span class="va">Xte</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">dat.train</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">u</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">dat.train</span><span class="op">[</span>,<span class="va">u</span><span class="op">]</span>, <span class="va">dat.test</span><span class="op">[</span>,<span class="va">u</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">## [1]  0.0032153025 -0.0004907226  0.0069561926</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="negative-binomial">Negative binomial<a class="anchor" aria-label="anchor" href="#negative-binomial"></a>
 </h2>
 <p>We generate data from a negative binomial distribution. We use the mean and overdispersion parameterization of the negative binomial distribution.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/NegBinomial.html" class="external-link">rnbinom</a></span><span class="op">(</span><span class="fl">10000</span>, size<span class="op">=</span><span class="fl">7</span>, mu <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
 <span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/datathin.html">datathin</a></span><span class="op">(</span><span class="va">dat</span>, family<span class="op">=</span><span class="st">"negative binomial"</span>, epsilon <span class="op">=</span> <span class="fl">0.2</span>, arg<span class="op">=</span><span class="fl">7</span><span class="op">)</span></span>
 <span><span class="va">dat.train</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">$</span><span class="va">Xtr</span></span>
@@ -216,49 +227,49 @@
 <span><span class="fl">0.2</span><span class="op">*</span><span class="fl">6</span></span>
 <span><span class="co">## [1] 1.2</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">dat.train</span><span class="op">)</span></span>
-<span><span class="co">## [1] 1.2029</span></span>
+<span><span class="co">## [1] 1.201</span></span>
 <span><span class="fl">0.8</span><span class="op">*</span><span class="fl">6</span></span>
 <span><span class="co">## [1] 4.8</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">dat.test</span><span class="op">)</span></span>
-<span><span class="co">## [1] 4.7703</span></span>
+<span><span class="co">## [1] 4.8421</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">dat.train</span>, <span class="va">dat.test</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">## [1] 0.001563443</span></span></code></pre></div>
+<span><span class="co">## [1] -0.0200846</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="gamma">Gamma<a class="anchor" aria-label="anchor" href="#gamma"></a>
 </h2>
 <p>We verify the same properties as above, assuming that the shape parameter is known.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/GammaDist.html" class="external-link">rgamma</a></span><span class="op">(</span><span class="fl">10000</span>, shape<span class="op">=</span><span class="fl">12</span>, rate<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
-<span><span class="co">## [1] 6.022534</span></span>
+<span><span class="co">## [1] 6.020971</span></span>
 <span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/datathin.html">datathin</a></span><span class="op">(</span><span class="va">dat</span>, family<span class="op">=</span><span class="st">"gamma"</span>, epsilon <span class="op">=</span> <span class="fl">0.5</span>, arg<span class="op">=</span><span class="fl">12</span><span class="op">)</span></span>
 <span><span class="va">dat.train</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">$</span><span class="va">Xtr</span></span>
 <span><span class="va">dat.test</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">$</span><span class="va">Xte</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">dat.train</span><span class="op">)</span></span>
-<span><span class="co">## [1] 3.001562</span></span>
+<span><span class="co">## [1] 3.000249</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">dat.test</span><span class="op">)</span></span>
-<span><span class="co">## [1] 3.020973</span></span>
+<span><span class="co">## [1] 3.020723</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">dat.train</span>, <span class="va">dat.test</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">## [1] -0.0074412</span></span></code></pre></div>
+<span><span class="co">## [1] 0.006786562</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="binomial">Binomial<a class="anchor" aria-label="anchor" href="#binomial"></a>
 </h2>
 <p>We verify the same properties as above, assuming that the size parameter is known. Note that, if we want to use <span class="math inline">\(\epsilon=0.5\)</span>, the size parameter of the binomial distribution must be an even number.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html" class="external-link">rbinom</a></span><span class="op">(</span><span class="fl">10000</span>, <span class="fl">16</span>, <span class="fl">0.25</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
-<span><span class="co">## [1] 4.0129</span></span>
+<span><span class="co">## [1] 3.9809</span></span>
 <span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/datathin.html">datathin</a></span><span class="op">(</span><span class="va">dat</span>, family<span class="op">=</span><span class="st">"binomial"</span>, epsilon <span class="op">=</span> <span class="fl">0.5</span>, arg<span class="op">=</span><span class="fl">16</span><span class="op">)</span></span>
 <span><span class="va">dat.train</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">$</span><span class="va">Xtr</span></span>
 <span><span class="va">dat.test</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">$</span><span class="va">Xte</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">dat.train</span><span class="op">)</span></span>
-<span><span class="co">## [1] 2.0006</span></span>
+<span><span class="co">## [1] 1.9984</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">dat.test</span><span class="op">)</span></span>
-<span><span class="co">## [1] 2.0123</span></span>
+<span><span class="co">## [1] 1.9825</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">dat.train</span>, <span class="va">dat.test</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">## [1] -0.003255232</span></span></code></pre></div>
+<span><span class="co">## [1] -0.004743161</span></span></code></pre></div>
 </div>
   </div>
 
