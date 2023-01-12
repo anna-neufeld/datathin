@@ -129,6 +129,21 @@ gammasplit <- function(data, epsilon, shape) {
 #' @param arg The extra parameter that must be known in order to split. Not needed for Poisson, but needed for all other distributions.
 #' Should be a scalar or should match dimensions of X. 
 datathin <- function(data, family, epsilon=0.5, arg=NULL) {
+  
+  if (!is.null(arg)) {
+    if (is.numeric(arg)) {
+      if (length(arg) != 1) {
+        if (length(arg) != length(data)) {
+          stop("If `arg` is not a scalar, its dimensions must match those of `data`.")
+        } 
+      }
+    } else {
+      if (dim(arg) != dim(data)) {
+        stop("If `arg` is not a scalar, its dimensions must match those of `data`.")
+      }
+    }
+  }
+  
   if (family == "poisson") {
     poissplit(data, epsilon)
   } else if (family == "negative binomial") {
@@ -164,6 +179,20 @@ datathin <- function(data, family, epsilon=0.5, arg=NULL) {
 #' @param arg The extra parameter that must be known in order to split. Not needed for Poisson, but needed for all other distributions.
 #' Should be a scalar or should match dimensions of X. 
 multithin <- function(data, family, nfolds=5, eps=NULL, arg=NULL) {
+  
+  if (!is.null(arg)) {
+    if (is.numeric(arg)) {
+      if (length(arg) != 1) {
+        if (length(arg) != length(data)) {
+          stop("If `arg` is not a scalar, its dimensions must match those of `data`.")
+      } 
+    }
+    } else {
+    if (dim(arg) != dim(data)) {
+      stop("If `arg` is not a scalar, its dimensions must match those of `data`.")
+    }
+    }
+  }
   if (is.null(eps)) {
     eps <- rep(1/nfolds, nfolds)
   }

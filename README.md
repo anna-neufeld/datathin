@@ -25,7 +25,7 @@ To reproduce the figures from our preprint, please see the following repository:
 References 
 ----
 
-Neufeld, A.,Dharamshi, A. & Witten, D. (2023), ‘Data thinning for convolution-closed distributions’, 
+Neufeld, A.,Dharamshi, A., Gao, L.L. & Witten, D. (2023), ‘Data thinning for convolution-closed distributions’, 
 
 
 

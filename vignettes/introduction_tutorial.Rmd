@@ -27,7 +27,7 @@ library(datathin)
 ```
 
 
-# Poisson 
+# Poisson
 
 We start by considering Poisson random variables. This is a simple case, as the Poisson distribution has only one parameter.
 
@@ -155,6 +155,12 @@ dat.test <- res$Xte
 sapply(1:ncol(dat.train), function(u) cor(dat.train[,u], dat.test[,u]))
 ```
 
+
+We quickly note that an error will be thrown if `arg` is not a scalar and its dimensions do not match those of the data. This is why we needed to construct the matrix ``good_args`` above. 
+
+```{r}
+res <- datathin(dat, family="normal", epsilon=0.5, arg=c(0.1,2,20))
+```
 
 # Negative binomial
 
