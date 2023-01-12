@@ -156,9 +156,9 @@ sapply(1:ncol(dat.train), function(u) cor(dat.train[,u], dat.test[,u]))
 ```
 
 
-We quickly note that an error will be thrown if `arg` is not a scalar and its dimensions do not match those of the data. This is why we needed to construct the matrix ``good_args`` above. 
+We quickly note that an error will be thrown if `arg` is not a scalar and its dimensions do not match those of the data. This is why we needed to construct the matrix ``good_args`` above. So the following code results in an error:
 
-```{r}
+```{r, eval=F}
 res <- datathin(dat, family="normal", epsilon=0.5, arg=c(0.1,2,20))
 ```
 
@@ -209,3 +209,8 @@ mean(dat.train)
 mean(dat.test)
 as.numeric(cor(dat.train, dat.test))
 ```
+
+
+# Multivariate normal and multinomial.
+
+Implementations and demonstrations for these multivariate distributions are coming soon! 
