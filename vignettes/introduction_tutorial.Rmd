@@ -14,9 +14,9 @@ knitr::opts_chunk$set(
 knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
 ```
 
-Welcome to the `datathin` package. In this tutorial, we will show how random variables from different distributions can be split into independent training at test components. For more details, see our preprint. For information on how to use `datathin` for tasks such as model evalation or inference after model selection, see our forthcoming tutorials. 
+Welcome to the `datathin` package. In this tutorial, we will show how random variables from different distributions can be split into independent training at test components. For more details, see our pre-print. For information on how to use `datathin` for tasks such as model evaluation or inference after model selection, see our forthcoming tutorials. 
 
-To get started, ensure that you have downloaded and loaded the package:
+To get started, ensure that you have downloaded the package. Make sure that ``remotes`` is installed by running ``install.packages("remotes")``, then type
 
 ```{r,eval=FALSE}
 remotes::install_github("anna-neufeld/datathin")
@@ -29,7 +29,7 @@ library(datathin)
 
 # Poisson
 
-We start by considering Poisson random variables. This is a simple case, as the Poisson distribution has only one parameter.
+The Poisson distribution is simple, because there is only one parameter. 
 
 We first generate a vector of 10,000 $Poisson(7)$ random variables. 
 
@@ -56,7 +56,7 @@ mean(dat.test)
 0.7*7
 ```
 
-We next verify that `dat.train` and `dat.test` are independent, and that they sum to `dat`. We note that throughout this document, we use small empirical correlations as evidence of independence. 
+We next verify that `dat.train` and `dat.test` are independent, and that they sum to `dat`. Throughout this document, we use small empirical correlations as evidence of independence. 
 
 ```{r}
 all.equal(dat, as.numeric(dat.train+dat.test))
@@ -66,7 +66,7 @@ cor(dat.train, dat.test)
 
 # Exponential
 
-We next consider exponential random variables. These are also simple, as the distribution only has one parameter. 
+We next consider the exponential distribution. 
 
 ```{r}
 set.seed(2)
@@ -80,14 +80,14 @@ For this distribution, we demonstrate how to create multiple indendent folds of 
 folds <- multithin(dat, family="exponential", nfolds=5)
 ```
 
-Here, `folds` is a list with 5 elements. Each list element stores one fold of data, which in this case means a vector of length 1000.
+Here, `folds` is a list with 5 elements. Each list element stores one fold of data, which in this case means a vector of length 100000.
 
 ```{r}
 length(folds)
 length(folds[[1]])
 ```
 
-We can verify that, for $m=1,\ldots,5$, the $m$th fold of data is independent of the sum of the remaining folds, and that it has mean $\frac{1}{5} \times 3$, while the remainder has mean $\frac{4}{5} \times 3$.
+We can verify that, for $m=1,\ldots,5$, the $m$th fold of data is independent of the sum of the remaining folds, and that it has mean $\frac{1}{5} \times 3$, while the remainder has mean $\frac{4}{5} \times 3$. Once again, we use small empirical correlations as evidence of independence.  
 
 ```{r}
 for (m in 1:5) {
@@ -136,7 +136,7 @@ dat <- cbind(rnorm(100000, mean=5, sd=sqrt(0.1)),
              rnorm(100000, mean=5, sd=sqrt(20)))
 ```
 
-First, we datathin but we incorrectly that all items in the matrix have $\sigma^2=2$. We see that we have negative correlation between the training and test sets in the first column (where we used a value of $\sigma^2$ that was too big), no correlation in the second column (where we used the correct value of $\sigma^2$(), and positive correlation in the last column (where we used a value of $\sigma^2$ that was too small). 
+First, we datathin but we incorrectly that all items in the matrix have $\sigma^2=2$. We see that we have negative correlation between the training and test sets in the first column (where we used a value of $\sigma^2$ that was too big), no correlation in the second column (where we used the correct value of $\sigma^2$), and positive correlation in the last column (where we used a value of $\sigma^2$ that was too small). See our preprint for further explanation of this property. 
 
 ```{r}
 res <- datathin(dat, family="normal", epsilon=0.5, arg=2)
@@ -155,8 +155,7 @@ dat.test <- res$Xte
 sapply(1:ncol(dat.train), function(u) cor(dat.train[,u], dat.test[,u]))
 ```
 
-
-We quickly note that an error will be thrown if `arg` is not a scalar and its dimensions do not match those of the data. This is why we needed to construct the matrix ``good_args`` above. So the following code results in an error:
+We quickly note that an error will be thrown if `arg` is not a scalar and its dimensions do not match those of the data. The following code results in an error:
 
 ```{r, eval=F}
 res <- datathin(dat, family="normal", epsilon=0.5, arg=c(0.1,2,20))
@@ -167,7 +166,7 @@ res <- datathin(dat, family="normal", epsilon=0.5, arg=c(0.1,2,20))
 We generate data from a negative binomial distribution. We use the mean and overdispersion parameterization of the negative binomial distribution. 
 
 ```{r}
-dat <- rnbinom(10000, size=7, mu = 6)
+dat <- rnbinom(100000, size=7, mu = 6)
 res <- datathin(dat, family="negative binomial", epsilon = 0.2, arg=7)
 dat.train <- res$Xtr
 dat.test <- res$Xte
@@ -192,7 +191,6 @@ mean(dat.train)
 mean(dat.test)
 as.numeric(cor(dat.train, dat.test))
 ```
-
 
 
 # Binomial 
