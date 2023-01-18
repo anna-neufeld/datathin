@@ -1,15 +1,14 @@
+url: https://anna-neufeld.github.io/datathin/
 template:
   params:
     bootswatch: flatly
-
 navbar:
   structure:
     left:
     - Home
     - Introductory tutorial
     - reference
-    right:
-    - github
+    right: github
   components:
     Home:
       text: Welcome
@@ -20,12 +19,10 @@ navbar:
     reference:
       text: Reference
       href: reference/index.html
-      
-
-
 reference:
 - title: User functions
   desc: ~
   contents:
   - datathin
   - multithin
+
