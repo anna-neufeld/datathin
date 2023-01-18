@@ -16,16 +16,13 @@ knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
 
 Welcome to the `datathin` package. In this tutorial, we will show how to use data thinning for model evaluation in the context of unsupervised learning. For more information, see our preprint (link coming soon).
 
-Before getting started with this tutorial, we recommend that you read our introductory tutorial. You also should ensure that the package is installed and loaded. 
+Before getting started with this tutorial, we recommend that you read our introductory tutorial. You also should ensure that the package is installed and loaded. We will also be using the packages `ggplot2` and `patchwork`, so those should also be installed and loaded. 
 
-
-```{r,eval=FALSE}
-remotes::install_github("anna-neufeld/datathin")
-```
 
 ```{r}
 library(datathin)
 library(ggplot2)
+library(patchwork)
 ```
 
 
@@ -43,7 +40,7 @@ ggplot(data=NULL, aes(x=X[,1], y=X[,2]))+geom_point()+
   theme_bw()+coord_fixed()+ggtitle("All data")
 ```
 
-Suppose that we didn't know that the data did not have any clusters, and we wanted to compare models with 1,2,3, etc. clusters to see which one provided the best fit to the data. Here, we will define "best fit" using the within-cluster mean squared error (MSE). 
+In this tutorial, we assume that we do not know how many true clusters this data has. We want to compare models with 1,2,3, etc. clusters to see which one provides the best fit to the data. Here, we will define "best fit" as the model that leads to the lowest within-cluster mean squared error (MSE). 
 
 ## The naive method
 
@@ -58,14 +55,11 @@ cluster.mse.naive <- function(dat, clusterlabs) {
     ss <- apply(clustdat, 1, function(u) sum((u-meanvec)^2))
     totSS <- totSS+sum(ss)
   }
-  n <- NROW(dat)
-  p <- NCOL(dat)
-  return(totSS/(n*p))
+  return(totSS/length(dat))
 }
 ```
 
-
-We now compare the within-cluster MSE of a model with 1 cluster to the within-cluster MSE of a model with 3 clusters, using our dataset above. 
+We now compare the within-cluster MSE of a model with 1 cluster to the within-cluster MSE of a model with 3 clusters. We estimate three clusters using k-means. 
 
 ```{r}
 one.cluster <- as.factor(rep(1,n))
@@ -73,10 +67,8 @@ three.clusters <- as.factor(kmeans(X, centers=3)$cluster)
 mse.1 <- cluster.mse.naive(X, one.cluster)
 mse.3 <- cluster.mse.naive(X, three.clusters)
 
-library(patchwork)
 p1 <- ggplot(data=NULL, aes(x=X[,1], y=X[,2], col=one.cluster))+geom_point()+
   theme_bw()+coord_fixed()+ggtitle("All data, 1 cluster", round(mse.1,3))
-library(patchwork)
 p3 <- ggplot(data=NULL, aes(x=X[,1], y=X[,2], col=three.clusters))+geom_point()+
   theme_bw()+coord_fixed()+ggtitle("All data, 3 clusters", round(mse.3,3))
 p1+p3
