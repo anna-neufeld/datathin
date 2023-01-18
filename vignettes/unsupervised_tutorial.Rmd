@@ -295,7 +295,7 @@ We see that, by averaging over multiple folds, we reduce the noise associated wi
 
 # Alternate distributions
 
-The code in this tutorial can be seamlessly updated to handle data that comes from a different distribution. We simply need to update the ``family`` argument in our calls to the ``datathin`` or `multithin` functions. Please see our [introductory tutorial](articles/introduction_tutorial.html) for a comprehensive list of the distributions that are available. 
+The code in this tutorial can be seamlessly updated to handle data that comes from a different distribution. We simply need to update the ``family`` argument in our calls to the ``datathin`` or `multithin` functions. Please see our [introductory tutorial](introduction_tutorial.html) for a comprehensive list of the distributions that are available. 
 
 # Alternate unsupervised learning models
 
