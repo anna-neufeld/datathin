@@ -36,8 +36,7 @@ n <- 150
 p <- 2
 X<- matrix(rnorm(n*p, mean=0, sd=1), ncol=p)
 
-ggplot(data=NULL, aes(x=X[,1], y=X[,2]))+geom_point()+
-  theme_bw()+coord_fixed()+ggtitle("All data")
+ggplot(data=NULL, aes(x=X[,1], y=X[,2]))+geom_point()+coord_fixed()+ggtitle("All data")
 ```
 
 In this tutorial, we assume that we do not know how many true clusters this data has. We want to compare models with 1,2,3, etc. clusters to see which one provides the best fit to the data. Here, we will define "best fit" as the model that leads to the lowest within-cluster mean squared error (MSE). 
@@ -68,9 +67,8 @@ mse.1 <- cluster.mse.naive(X, one.cluster)
 mse.3 <- cluster.mse.naive(X, three.clusters)
 
 p1 <- ggplot(data=NULL, aes(x=X[,1], y=X[,2], col=one.cluster))+geom_point()+
-  theme_bw()+coord_fixed()+ggtitle("All data, 1 cluster", round(mse.1,3))
-p3 <- ggplot(data=NULL, aes(x=X[,1], y=X[,2], col=three.clusters))+geom_point()+
-  theme_bw()+coord_fixed()+ggtitle("All data, 3 clusters", round(mse.3,3))
+    coord_fixed()+ggtitle("All data, 1 cluster", round(mse.1,3))
+p3 <- ggplot(data=NULL, aes(x=X[,1], y=X[,2], col=three.clusters))+geom_point()+coord_fixed()+ggtitle("All data, 3 clusters", round(mse.3,3))
 p1+p3
 ```
 
@@ -82,7 +80,6 @@ clusters.full <- sapply(1:10, function(u) kmeans(X, centers= u)$cluster)
 results.naive <-  apply(clusters.full, 2, function(u) cluster.mse.naive(X, u))
 ggplot(data = NULL)+
   geom_line(aes(x=1:10, y=results.naive, col="Naive method"), lwd=1.5)+
-  theme_bw()+
   theme(axis.text = element_text(size=16), axis.title = element_text(size=18))+
   scale_x_continuous(breaks=seq(0,10,by=2))+
   xlab("Number of Clusters") + ylab("Total within-cluster MSE")+labs(col="")
@@ -100,30 +97,30 @@ X.thin <- datathin(X, family="normal", epsilon=0.5, arg=1)
 Xtrain <- X.thin$Xtr
 Xtest <- X.thin$Xte
 p1 <- ggplot(data=NULL, aes(x=X[,1], y=X[,2]))+geom_point()+
-  theme_bw()+xlim(c(-3,3))+ylim(c(-3,3))+
+  xlim(c(-3,3))+ylim(c(-3,3))+
   coord_fixed()+ggtitle("All data")
 p2 <- ggplot(data=NULL, aes(x=Xtrain[,1], y=Xtrain[,2]))+geom_point()+
-  theme_bw()+xlim(c(-3,3))+ylim(c(-3,3))+
+  xlim(c(-3,3))+ylim(c(-3,3))+
   coord_fixed()+ggtitle("Training set")
 p3 <- ggplot(data=NULL, aes(x=Xtest[,1], y=Xtest[,2]))+geom_point()+
-  theme_bw()+xlim(c(-3,3))+ylim(c(-3,3))+
+  xlim(c(-3,3))+ylim(c(-3,3))+
   coord_fixed()+ggtitle("Test set")
 p1+p2+p3
 ```
-Now, if we cluster the training set and apply those labels to the test set, we do not get overfitting. 
+Note that if we cluster the training set and apply those labels to the test set, our within-cluster MSE estimated on the test set will not be affected by overfitting. 
 
 ```{r}
 cluster.train <- as.factor(kmeans(Xtrain, centers=3)$cluster)
 p2 <- ggplot(data=NULL, aes(x=Xtrain[,1], y=Xtrain[,2], col=cluster.train))+geom_point()+
-  theme_bw()+xlim(c(-3,3))+ylim(c(-3,3))+
+  xlim(c(-3,3))+ylim(c(-3,3))+
   coord_fixed()+ggtitle("Training set")
 p3 <- ggplot(data=NULL, aes(x=Xtest[,1], y=Xtest[,2], col=cluster.train))+geom_point()+
-  theme_bw()+xlim(c(-3,3))+ylim(c(-3,3))+
+  xlim(c(-3,3))+ylim(c(-3,3))+
   coord_fixed()+ggtitle("Test set")
 p2+p3+plot_layout(guides="collect")
 ```
 
-This helps us make an MSE curve that is *not* monotonically decreasing in the number of clusters, and that correctly identifies 1 cluster as the best-fit for this data. We first need to write a data thinning MSE function. 
+This helps us make an MSE curve that is *not* monotonically decreasing in the number of clusters. We first need to write a data thinning within-cluster MSE function. Note that this function needs access to the training data (for computing cluster means) and the test data (for computing the deviations around these cluster means).
 
 ```{r}
 cluster.mse.datathin <- function(dat.train, dat.test, clusterlabs) {
@@ -134,13 +131,11 @@ cluster.mse.datathin <- function(dat.train, dat.test, clusterlabs) {
     ss <- apply(clustdat.test, 1, function(u) sum((u-meanvec)^2))
     totSS <- totSS+sum(ss)
   }
-  n <- NROW(dat.test)
-  p <- NCOL(dat.test)
-  return(totSS/(n*p))
+  return(totSS/length(dat.test))
 }
 ```
 
-We can now apply it to our data. To put the naive method and data thinning on the same scale in terms of the MSE, we can multiply the data thinning MSE by $1/\epsilon$, where for us $\epsilon = 0.5$. 
+We can now apply it to our data. To put the MSE from the naive method and the MSE from data thinning on the same scale, we can multiply the data thinning MSE by $1/\epsilon$, where $\epsilon = 0.5$. 
 
 ```{r}
 clusters.full <- sapply(1:10, function(u) kmeans(X, centers= u)$cluster)
@@ -154,19 +149,15 @@ eps = 0.5
 ggplot(data = NULL)+
   geom_line(aes(x=1:10, y=results.naive, col="Naive method"), lwd=1.5)+
   geom_line(aes(x=1:10, y=results.datathin/eps, col="Data thinning"), lwd=1.5)+
-  theme_bw()+
-  scale_x_continuous(breaks=seq(0,10,by=2))+
+  scale_x_continuous(breaks=seq(0,10,by=1))+
   xlab("Number of Clusters") + ylab("Total within-cluster MSE")+labs(col="")
 ```
 
-We see that this new method correctly identified that there is only one true cluster in this data, since the within-cluster MSE is minimized with 1 cluster.
-
+The within-cluster MSE obtained using data thinning is minimized at 1 cluster. Thus, we say that data thinning correctly selects the true number of clusters. 
 
 # Data with three true clusters
 
-We now study the performance of the naive method and of data thinning when there truly are clusters in our dataset. 
-
-To start, we generate a new dataset. We lstill let $n=150$ and $p=2$. 
+We now study the performance of the naive method and of data thinning when there are three true clusters in this dataset. To start, we generate data with $n=150$ and $p=2$ and $3$ true clusters. We plot this data.  
 
 ```{r}
 p <- 2
@@ -187,13 +178,13 @@ X.thin <- datathin(X, family="normal", epsilon=0.5, arg=1)
 Xtrain <- X.thin$Xtr
 Xtest <- X.thin$Xte
 p1 <- ggplot(data=NULL, aes(x=X[,1], y=X[,2], col=trueClusters))+geom_point()+
-  theme_bw()+xlim(c(-6,6))+ylim(c(-6,6))+
+  xlim(c(-6,6))+ylim(c(-6,6))+
   coord_fixed()+ggtitle("All data")
 p2 <- ggplot(data=NULL, aes(x=Xtrain[,1], y=Xtrain[,2], col=trueClusters))+geom_point()+
-  theme_bw()+xlim(c(-6,6))+ylim(c(-6,6))+
+  xlim(c(-6,6))+ylim(c(-6,6))+
   coord_fixed()+ggtitle("Training set")
 p3 <- ggplot(data=NULL, aes(x=Xtest[,1], y=Xtest[,2], col=trueClusters))+geom_point()+
-  theme_bw()+xlim(c(-6,6))+ylim(c(-6,6))+
+  xlim(c(-6,6))+ylim(c(-6,6))+
   coord_fixed()+ggtitle("Test set")
 p1+p2+p3+plot_layout(guides="collect")
 ```
@@ -214,9 +205,7 @@ eps = 0.5
 ggplot(data = NULL)+
   geom_line(aes(x=1:10, y=results.naive, col="Naive method"), lwd=1.5)+
   geom_line(aes(x=1:10, y=results.datathin/eps, col="Data thinning"), lwd=1.5)+
-  theme_bw()+
-  theme(axis.text = element_text(size=16), axis.title = element_text(size=18))+
-  scale_x_continuous(breaks=seq(0,10,by=2))+
+  scale_x_continuous(breaks=seq(0,10,by=1))+
   xlab("Number of Clusters") + ylab("Total within-cluster MSE")
 
 ```

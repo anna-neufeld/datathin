@@ -15,8 +15,7 @@ n <- 150
 p <- 2
 X<- matrix(rnorm(n*p, mean=0, sd=1), ncol=p)
 
-ggplot(data=NULL, aes(x=X[,1], y=X[,2]))+geom_point()+
-  theme_bw()+coord_fixed()+ggtitle("All data")
+ggplot(data=NULL, aes(x=X[,1], y=X[,2]))+geom_point()+coord_fixed()+ggtitle("All data")
 
 ## -----------------------------------------------------------------------------
 cluster.mse.naive <- function(dat, clusterlabs) {
@@ -37,9 +36,8 @@ mse.1 <- cluster.mse.naive(X, one.cluster)
 mse.3 <- cluster.mse.naive(X, three.clusters)
 
 p1 <- ggplot(data=NULL, aes(x=X[,1], y=X[,2], col=one.cluster))+geom_point()+
-  theme_bw()+coord_fixed()+ggtitle("All data, 1 cluster", round(mse.1,3))
-p3 <- ggplot(data=NULL, aes(x=X[,1], y=X[,2], col=three.clusters))+geom_point()+
-  theme_bw()+coord_fixed()+ggtitle("All data, 3 clusters", round(mse.3,3))
+    coord_fixed()+ggtitle("All data, 1 cluster", round(mse.1,3))
+p3 <- ggplot(data=NULL, aes(x=X[,1], y=X[,2], col=three.clusters))+geom_point()+coord_fixed()+ggtitle("All data, 3 clusters", round(mse.3,3))
 p1+p3
 
 ## -----------------------------------------------------------------------------
@@ -47,7 +45,6 @@ clusters.full <- sapply(1:10, function(u) kmeans(X, centers= u)$cluster)
 results.naive <-  apply(clusters.full, 2, function(u) cluster.mse.naive(X, u))
 ggplot(data = NULL)+
   geom_line(aes(x=1:10, y=results.naive, col="Naive method"), lwd=1.5)+
-  theme_bw()+
   theme(axis.text = element_text(size=16), axis.title = element_text(size=18))+
   scale_x_continuous(breaks=seq(0,10,by=2))+
   xlab("Number of Clusters") + ylab("Total within-cluster MSE")+labs(col="")
@@ -57,23 +54,23 @@ X.thin <- datathin(X, family="normal", epsilon=0.5, arg=1)
 Xtrain <- X.thin$Xtr
 Xtest <- X.thin$Xte
 p1 <- ggplot(data=NULL, aes(x=X[,1], y=X[,2]))+geom_point()+
-  theme_bw()+xlim(c(-3,3))+ylim(c(-3,3))+
+  xlim(c(-3,3))+ylim(c(-3,3))+
   coord_fixed()+ggtitle("All data")
 p2 <- ggplot(data=NULL, aes(x=Xtrain[,1], y=Xtrain[,2]))+geom_point()+
-  theme_bw()+xlim(c(-3,3))+ylim(c(-3,3))+
+  xlim(c(-3,3))+ylim(c(-3,3))+
   coord_fixed()+ggtitle("Training set")
 p3 <- ggplot(data=NULL, aes(x=Xtest[,1], y=Xtest[,2]))+geom_point()+
-  theme_bw()+xlim(c(-3,3))+ylim(c(-3,3))+
+  xlim(c(-3,3))+ylim(c(-3,3))+
   coord_fixed()+ggtitle("Test set")
 p1+p2+p3
 
 ## -----------------------------------------------------------------------------
 cluster.train <- as.factor(kmeans(Xtrain, centers=3)$cluster)
 p2 <- ggplot(data=NULL, aes(x=Xtrain[,1], y=Xtrain[,2], col=cluster.train))+geom_point()+
-  theme_bw()+xlim(c(-3,3))+ylim(c(-3,3))+
+  xlim(c(-3,3))+ylim(c(-3,3))+
   coord_fixed()+ggtitle("Training set")
 p3 <- ggplot(data=NULL, aes(x=Xtest[,1], y=Xtest[,2], col=cluster.train))+geom_point()+
-  theme_bw()+xlim(c(-3,3))+ylim(c(-3,3))+
+  xlim(c(-3,3))+ylim(c(-3,3))+
   coord_fixed()+ggtitle("Test set")
 p2+p3+plot_layout(guides="collect")
 
@@ -86,9 +83,7 @@ cluster.mse.datathin <- function(dat.train, dat.test, clusterlabs) {
     ss <- apply(clustdat.test, 1, function(u) sum((u-meanvec)^2))
     totSS <- totSS+sum(ss)
   }
-  n <- NROW(dat.test)
-  p <- NCOL(dat.test)
-  return(totSS/(n*p))
+  return(totSS/length(dat.test))
 }
 
 ## -----------------------------------------------------------------------------
@@ -103,8 +98,7 @@ eps = 0.5
 ggplot(data = NULL)+
   geom_line(aes(x=1:10, y=results.naive, col="Naive method"), lwd=1.5)+
   geom_line(aes(x=1:10, y=results.datathin/eps, col="Data thinning"), lwd=1.5)+
-  theme_bw()+
-  scale_x_continuous(breaks=seq(0,10,by=2))+
+  scale_x_continuous(breaks=seq(0,10,by=1))+
   xlab("Number of Clusters") + ylab("Total within-cluster MSE")+labs(col="")
 
 ## -----------------------------------------------------------------------------
@@ -123,13 +117,13 @@ X.thin <- datathin(X, family="normal", epsilon=0.5, arg=1)
 Xtrain <- X.thin$Xtr
 Xtest <- X.thin$Xte
 p1 <- ggplot(data=NULL, aes(x=X[,1], y=X[,2], col=trueClusters))+geom_point()+
-  theme_bw()+xlim(c(-6,6))+ylim(c(-6,6))+
+  xlim(c(-6,6))+ylim(c(-6,6))+
   coord_fixed()+ggtitle("All data")
 p2 <- ggplot(data=NULL, aes(x=Xtrain[,1], y=Xtrain[,2], col=trueClusters))+geom_point()+
-  theme_bw()+xlim(c(-6,6))+ylim(c(-6,6))+
+  xlim(c(-6,6))+ylim(c(-6,6))+
   coord_fixed()+ggtitle("Training set")
 p3 <- ggplot(data=NULL, aes(x=Xtest[,1], y=Xtest[,2], col=trueClusters))+geom_point()+
-  theme_bw()+xlim(c(-6,6))+ylim(c(-6,6))+
+  xlim(c(-6,6))+ylim(c(-6,6))+
   coord_fixed()+ggtitle("Test set")
 p1+p2+p3+plot_layout(guides="collect")
 
@@ -145,9 +139,7 @@ eps = 0.5
 ggplot(data = NULL)+
   geom_line(aes(x=1:10, y=results.naive, col="Naive method"), lwd=1.5)+
   geom_line(aes(x=1:10, y=results.datathin/eps, col="Data thinning"), lwd=1.5)+
-  theme_bw()+
-  theme(axis.text = element_text(size=16), axis.title = element_text(size=18))+
-  scale_x_continuous(breaks=seq(0,10,by=2))+
+  scale_x_continuous(breaks=seq(0,10,by=1))+
   xlab("Number of Clusters") + ylab("Total within-cluster MSE")
 
 
