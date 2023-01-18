@@ -143,3 +143,41 @@ ggplot(data = NULL)+
   xlab("Number of Clusters") + ylab("Total within-cluster MSE")
 
 
+## -----------------------------------------------------------------------------
+cluster.mse.datathin <- function(dat.train, dat.test, clusterlabs, eps=0.5) {
+  totSS <- 0
+  for (lab in unique(clusterlabs)) {
+    clustdat.test <- dat.test[clusterlabs==lab,, drop='F']
+    meanvec <- (1-eps)/(eps)*colMeans(dat.train[clusterlabs==lab,, drop='F'])
+    ss <- apply(clustdat.test, 1, function(u) sum((u-meanvec)^2))
+    totSS <- totSS+sum(ss)
+  }
+  return(totSS/length(dat.test))
+}
+
+## -----------------------------------------------------------------------------
+X.thin <- datathin(X, family="normal", epsilon=0.9, arg=1)
+Xtrain <- X.thin$Xtr
+Xtest <- X.thin$Xte
+p1 <- ggplot(data=NULL, aes(x=X[,1], y=X[,2], col=trueClusters))+geom_point()+
+  xlim(c(-6,6))+ylim(c(-6,6))+
+  coord_fixed()+ggtitle("All data")
+p2 <- ggplot(data=NULL, aes(x=Xtrain[,1], y=Xtrain[,2], col=trueClusters))+geom_point()+
+  xlim(c(-6,6))+ylim(c(-6,6))+
+  coord_fixed()+ggtitle("Training set")
+p3 <- ggplot(data=NULL, aes(x=Xtest[,1], y=Xtest[,2], col=trueClusters))+geom_point()+
+  xlim(c(-4,4))+ylim(c(-4,4))+
+  coord_fixed()+ggtitle("Test set")
+p1+p2+p3+plot_layout(guides="collect")
+
+## -----------------------------------------------------------------------------
+eps=0.9
+clusters.train <- sapply(1:10, function(u) kmeans(Xtrain, centers= u)$cluster)
+results.datathin <- apply( clusters.train, 2, function(u) cluster.mse.datathin(Xtrain,Xtest, u, eps))
+
+ggplot(data = NULL)+
+  geom_line(aes(x=1:10, y=results.datathin, col="Data thinning"), lwd=1.5)+
+  scale_x_continuous(breaks=seq(0,10,by=1))+
+  xlab("Number of Clusters") + ylab("Total within-cluster MSE")
+
+
