@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
 ```
 
-Welcome to the `datathin` package. In this tutorial, we will show how random variables from different distributions can be split into independent training at test components. For more details, see our pre-print. For information on how to use `datathin` for tasks such as model evaluation or inference after model selection, see our forthcoming tutorials. 
+Welcome to the `datathin` package. In this tutorial, we will show how random variables from different distributions can be split into independent training and test components. For more details, see our pre-print. For information on how to use `datathin` for tasks such as model evaluation or inference after model selection, see our forthcoming tutorials. 
 
 To get started, ensure that you have downloaded the package. Make sure that ``remotes`` is installed by running ``install.packages("remotes")``, then type
 

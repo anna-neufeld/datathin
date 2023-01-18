@@ -15,9 +15,11 @@ remotes::install_github("anna-neufeld/datathin")
 Where can I learn more? 
 -----
 
-For how, you can check our our [introductory tutorial](), which gives extremely basic examples of how to use our package. More tutorials for this package are coming soon! We will provide examples of how to use ``datathin`` for tasks such as model evaluation and inference after model selection under a variety of distributional assumptions. 
+For now, you can check our our [introductory tutorial](articles/introduction_tutorial.html), which gives basic examples of how to apply data thinning under a variety of distributional assumptions.  You can also check out our [unsupervised learning tutorial](articles/unsupervised_tutorial.html), which shows how data thinning can be applied to estimate the number of clusters in normally distributed data. 
 
-We will also soon post a link to our preprint where you can learn more!
+More tutorials for this package are coming soon! We will provide examples of how to use ``datathin`` for tasks such as model evaluation and inference after model selection under a variety of distributional assumptions. 
+
+To learn more, check out our preprint [(link to preprint coming soon)](...).
 
 To reproduce the figures from our preprint, please see the following repository: [https://github.com/anna-neufeld/datathin_paper](https://github.com/anna-neufeld/datathin_paper). 
 
