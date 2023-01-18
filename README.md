@@ -21,7 +21,7 @@ We will also soon post a link to our preprint where you can learn more!
 
 To reproduce the figures from our preprint, please see the following repository: [https://github.com/anna-neufeld/datathin_paper](https://github.com/anna-neufeld/datathin_paper). 
 
-Note that the scRNA-seq dataset analyzed in our paper is available for free from [10X genomics](https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz), and is also included in the R package [`countsplit`](https://anna-neufeld.github.io/countsplit/)
+Note that the scRNA-seq dataset analyzed in our paper is available for free from [10X genomics](https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz), and is also included in the R package [countsplit](https://anna-neufeld.github.io/countsplit/)
 
 
 References 
