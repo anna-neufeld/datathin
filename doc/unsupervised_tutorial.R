@@ -181,3 +181,23 @@ ggplot(data = NULL)+
   xlab("Number of Clusters") + ylab("Total within-cluster MSE")
 
 
+## -----------------------------------------------------------------------------
+nFolds <- 10
+eps
+X.multithin <- multithin(X, family="normal", nfolds=nFolds, arg=1)
+totalMSEs <- matrix(NA, nrow=nFolds, ncol=10)
+for (fold in 1:nFolds) {
+  Xtest <- X.multithin[[fold]]
+  Xtrain <- X-Xtest
+  clusters.train <- sapply(1:10, function(u) kmeans(Xtrain, centers= u)$cluster)
+  totalMSEs[fold,] <- apply( clusters.train, 2, function(u) cluster.mse.datathin(Xtrain,Xtest, u, (nFolds-1)/nFolds))
+}
+
+averagedMSEs <- apply(totalMSEs, 2, mean)
+
+ggplot(data = NULL)+
+  geom_line(aes(x=1:10, y=results.datathin, col="Data thinning, eps=0.9"), lwd=1.5)+
+  geom_line(aes(x=1:10, y=averagedMSEs, col="Multi thinning, 10 folds"), lwd=1.5)+
+  scale_x_continuous(breaks=seq(0,10,by=1))+
+  xlab("Number of Clusters") + ylab("Total within-cluster MSE")
+

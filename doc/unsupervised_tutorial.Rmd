@@ -265,13 +265,38 @@ ggplot(data = NULL)+
 
 # Data thinning with multiple folds.
 
-Finally, we show how to repeat the above analysis with multiple folds. 
+Finally, we show how to repeat the above analysis with multiple folds using the `multithin` function.
+
+```{r}
+nFolds <- 10
+eps
+X.multithin <- multithin(X, family="normal", nfolds=nFolds, arg=1)
+totalMSEs <- matrix(NA, nrow=nFolds, ncol=10)
+for (fold in 1:nFolds) {
+  Xtest <- X.multithin[[fold]]
+  Xtrain <- X-Xtest
+  clusters.train <- sapply(1:10, function(u) kmeans(Xtrain, centers= u)$cluster)
+  totalMSEs[fold,] <- apply( clusters.train, 2, function(u) cluster.mse.datathin(Xtrain,Xtest, u, (nFolds-1)/nFolds))
+}
+
+averagedMSEs <- apply(totalMSEs, 2, mean)
+
+ggplot(data = NULL)+
+  geom_line(aes(x=1:10, y=results.datathin, col="Data thinning, eps=0.9"), lwd=1.5)+
+  geom_line(aes(x=1:10, y=averagedMSEs, col="Multi thinning, 10 folds"), lwd=1.5)+
+  scale_x_continuous(breaks=seq(0,10,by=1))+
+  xlab("Number of Clusters") + ylab("Total within-cluster MSE")
+```
+
+We see that, by averaging over multiple folds, we reduce the noise associated with our test set MSE and we get a more clearly defined minimum MSE at the true number of clusters. 
 
 
 # Alternate distributions
 
-The code in this tutorial can be seamlessly updated to handle data that comes from a different distribution. We simply need to update the ``family`` argument in our calls to the ``datathin`` function. Please see our introductory tutorial for a comprehensive list of the distributions that are available. 
+The code in this tutorial can be seamlessly updated to handle data that comes from a different distribution. We simply need to update the ``family`` argument in our calls to the ``datathin`` or `multithin` functions. Please see our introductory tutorial for a comprehensive list of the distributions that are available. 
 
 # Alternate unsupervised learning models
 
 Instead of estimating the number of clusters, we might wish to perform an analysis where we estimate the rank of a matrix (e.g. estimate the number of principal components that should be retained for further analysis). We will give an example of the principal components task in a future tutorial.
+
+
