@@ -61,17 +61,11 @@ normsplit <- function(data, epsilon, sigma) {
     print("Normal standard deviation missing.")
     return()
   }
-  
-  
-  
-  
+
   
   X[] <- rnorm(n, mean=epsilon*dmat, sd=sqrt(epsilon*(1-epsilon))*sigma)
   Y <- dmat - X
-  
-  cor(X[,1], Y[,1])
-  cor(X[,2], Y[,2])
-  cor(X[,3], Y[,3])
+
   
   return(list(Xtr = X, Xte = Y))
 }
