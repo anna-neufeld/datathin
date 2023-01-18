@@ -7,6 +7,7 @@ navbar:
     left:
     - Home
     - Introductory tutorial
+    - Unsupervised learning tutorial
     - reference
     right: github
   components:
@@ -16,6 +17,9 @@ navbar:
     Introductory tutorial:
       text: Introductory tutorial
       href: articles/introduction_tutorial.html
+    Unsupervised learning tutorial:
+      text: Unsupervised learning tutorial
+      href: articles/unsupervised_tutorial.html
     reference:
       text: Reference
       href: reference/index.html

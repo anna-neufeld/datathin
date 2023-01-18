@@ -1,30 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/404.html</loc>
+    <loc>https://anna-neufeld.github.io/datathin/404.html</loc>
   </url>
   <url>
-    <loc>/LICENSE-text.html</loc>
+    <loc>https://anna-neufeld.github.io/datathin/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>/articles/index.html</loc>
+    <loc>https://anna-neufeld.github.io/datathin/articles/index.html</loc>
   </url>
   <url>
-    <loc>/articles/introduction_tutorial.html</loc>
+    <loc>https://anna-neufeld.github.io/datathin/articles/introduction_tutorial.html</loc>
   </url>
   <url>
-    <loc>/authors.html</loc>
+    <loc>https://anna-neufeld.github.io/datathin/articles/unsupervised_tutorial.html</loc>
   </url>
   <url>
-    <loc>/index.html</loc>
+    <loc>https://anna-neufeld.github.io/datathin/authors.html</loc>
   </url>
   <url>
-    <loc>/reference/datathin.html</loc>
+    <loc>https://anna-neufeld.github.io/datathin/index.html</loc>
   </url>
   <url>
-    <loc>/reference/index.html</loc>
+    <loc>https://anna-neufeld.github.io/datathin/reference/datathin.html</loc>
   </url>
   <url>
-    <loc>/reference/multithin.html</loc>
+    <loc>https://anna-neufeld.github.io/datathin/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://anna-neufeld.github.io/datathin/reference/multithin.html</loc>
   </url>
 </urlset>
