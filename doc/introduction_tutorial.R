@@ -32,7 +32,7 @@ cor(dat.train, dat.test)
 
 ## -----------------------------------------------------------------------------
 set.seed(2)
-dat <- rexp(100000, rate=1/3)
+dat <- rexp(100000, rate=1/5)
 mean(dat)
 
 ## -----------------------------------------------------------------------------
@@ -50,10 +50,9 @@ for (m in 1:5) {
   dat.test <- folds[[m]]
   dat.train <- dat - folds[[m]]
   
-  print(c(1/5*mean(dat), mean(dat.test)))
-  print(c(4/5*mean(dat), mean(dat.train)))
-
-  print(as.numeric(cor(dat.test, dat.train)))
+  print(paste("Test set mean", round(mean(dat.test), 3)))
+  print(paste("Training set mean:", round(mean(dat.train), 3)))
+  print(paste("Sample correlation:", round(as.numeric(cor(dat.test, dat.train)),4)))
 }
 
 ## -----------------------------------------------------------------------------
@@ -65,7 +64,8 @@ res <- datathin(dat, family="normal", epsilon=0.5, arg=2)
 dat.train <- res$Xtr
 dat.test <- res$Xte
 
-sapply(1:ncol(dat.train), function(u) cor(dat.train[,u], dat.test[,u]))
+cors <- sapply(1:ncol(dat.train), function(u) round(cor(dat.train[,u], dat.test[,u]), 4))
+print(paste("Correlation between train and test in column", 1:10, ":", cors))
 
 ## -----------------------------------------------------------------------------
 dat <- cbind(rnorm(100000, mean=5, sd=sqrt(0.1)),
@@ -76,14 +76,16 @@ dat <- cbind(rnorm(100000, mean=5, sd=sqrt(0.1)),
 res <- datathin(dat, family="normal", epsilon=0.5, arg=2)
 dat.train <- res$Xtr
 dat.test <- res$Xte
-sapply(1:ncol(dat.train), function(u) cor(dat.train[,u], dat.test[,u]))
+cors <- sapply(1:ncol(dat.train), function(u) round(cor(dat.train[,u], dat.test[,u]), 4))
+print(paste("Correlation between train and test in column", 1:3, ":", cors))
 
 ## -----------------------------------------------------------------------------
 good_args <- cbind(rep(0.1, 100000), rep(2, 100000), rep(20,100000))
 res <- datathin(dat, family="normal", epsilon=0.5, arg=good_args)
 dat.train <- res$Xtr
 dat.test <- res$Xte
-sapply(1:ncol(dat.train), function(u) cor(dat.train[,u], dat.test[,u]))
+cors <- sapply(1:ncol(dat.train), function(u) round(as.numeric(cor(dat.train[,u], dat.test[,u])),4))
+print(paste("Correlation between train and test in column", 1:3, ":", cors))
 
 ## ---- eval=F------------------------------------------------------------------
 #  res <- datathin(dat, family="normal", epsilon=0.5, arg=c(0.1,2,20))

@@ -70,7 +70,7 @@ We next consider the exponential distribution.
 
 ```{r}
 set.seed(2)
-dat <- rexp(100000, rate=1/3)
+dat <- rexp(100000, rate=1/5)
 mean(dat)
 ```
 
@@ -87,7 +87,7 @@ length(folds)
 length(folds[[1]])
 ```
 
-We can verify that, for $m=1,\ldots,5$, the $m$th fold of data is independent of the sum of the remaining folds, and that it has mean $\frac{1}{5} \times 3$, while the remainder has mean $\frac{4}{5} \times 3$. Once again, we use small empirical correlations as evidence of independence.  
+We can verify that, for $m=1,\ldots,5$, the $m$th fold of data is independent of the sum of the remaining folds, and that it has mean $\frac{1}{5} \times 5 = 1$, while the remainder has mean $\frac{4}{5} \times 5 = 4$. Once again, we use small empirical correlations as evidence of independence.  
 
 ```{r}
 for (m in 1:5) {
@@ -97,10 +97,9 @@ for (m in 1:5) {
   dat.test <- folds[[m]]
   dat.train <- dat - folds[[m]]
   
-  print(c(1/5*mean(dat), mean(dat.test)))
-  print(c(4/5*mean(dat), mean(dat.train)))
-
-  print(as.numeric(cor(dat.test, dat.train)))
+  print(paste("Test set mean", round(mean(dat.test), 3)))
+  print(paste("Training set mean:", round(mean(dat.train), 3)))
+  print(paste("Sample correlation:", round(as.numeric(cor(dat.test, dat.train)),4)))
 }
 ```
 
@@ -123,7 +122,8 @@ res <- datathin(dat, family="normal", epsilon=0.5, arg=2)
 dat.train <- res$Xtr
 dat.test <- res$Xte
 
-sapply(1:ncol(dat.train), function(u) cor(dat.train[,u], dat.test[,u]))
+cors <- sapply(1:ncol(dat.train), function(u) round(cor(dat.train[,u], dat.test[,u]), 4))
+print(paste("Correlation between train and test in column", 1:10, ":", cors))
 ```
 
 The parameter `arg` must either be a scalar (in which case it is assumed that all elements of the data matrix have the same value of $\sigma^2$), or its dimensions must match that of the data.
@@ -136,13 +136,14 @@ dat <- cbind(rnorm(100000, mean=5, sd=sqrt(0.1)),
              rnorm(100000, mean=5, sd=sqrt(20)))
 ```
 
-First, we datathin but we incorrectly that all items in the matrix have $\sigma^2=2$. We see that we have negative correlation between the training and test sets in the first column (where we used a value of $\sigma^2$ that was too big), no correlation in the second column (where we used the correct value of $\sigma^2$), and positive correlation in the last column (where we used a value of $\sigma^2$ that was too small). See our preprint for further explanation of this property. 
+First, we datathin but we incorrectly assume that all items in the matrix have $\sigma^2=2$. We see that we have negative correlation between the training and test sets in the first column (where we used a value of $\sigma^2$ that was too big), no correlation in the second column (where we used the correct value of $\sigma^2$), and positive correlation in the last column (where we used a value of $\sigma^2$ that was too small). See our preprint for further explanation of this property. 
 
 ```{r}
 res <- datathin(dat, family="normal", epsilon=0.5, arg=2)
 dat.train <- res$Xtr
 dat.test <- res$Xte
-sapply(1:ncol(dat.train), function(u) cor(dat.train[,u], dat.test[,u]))
+cors <- sapply(1:ncol(dat.train), function(u) round(cor(dat.train[,u], dat.test[,u]), 4))
+print(paste("Correlation between train and test in column", 1:3, ":", cors))
 ```
 
 To remedy the situation, we must let `arg` be a matrix that stores the correct $\sigma^2$ values.
@@ -152,7 +153,8 @@ good_args <- cbind(rep(0.1, 100000), rep(2, 100000), rep(20,100000))
 res <- datathin(dat, family="normal", epsilon=0.5, arg=good_args)
 dat.train <- res$Xtr
 dat.test <- res$Xte
-sapply(1:ncol(dat.train), function(u) cor(dat.train[,u], dat.test[,u]))
+cors <- sapply(1:ncol(dat.train), function(u) round(as.numeric(cor(dat.train[,u], dat.test[,u])),4))
+print(paste("Correlation between train and test in column", 1:3, ":", cors))
 ```
 
 We quickly note that an error will be thrown if `arg` is not a scalar and its dimensions do not match those of the data. The following code results in an error:

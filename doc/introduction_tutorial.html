@@ -178,9 +178,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1>Exponential</h1>
 <p>We next consider the exponential distribution.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">rexp</span>(<span class="dv">100000</span>, <span class="at">rate=</span><span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">rexp</span>(<span class="dv">100000</span>, <span class="at">rate=</span><span class="dv">1</span><span class="sc">/</span><span class="dv">5</span>)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(dat)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 2.994101</span></span></code></pre></div>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 4.990168</span></span></code></pre></div>
 <p>For this distribution, we demonstrate how to create multiple indendent folds of data using the <code>multithin</code> function.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>folds <span class="ot">&lt;-</span> <span class="fu">multithin</span>(dat, <span class="at">family=</span><span class="st">&quot;exponential&quot;</span>, <span class="at">nfolds=</span><span class="dv">5</span>)</span></code></pre></div>
 <p>Here, <code>folds</code> is a list with 5 elements. Each list element stores one fold of data, which in this case means a vector of length 100000.</p>
@@ -188,7 +188,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 5</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(folds[[<span class="dv">1</span>]])</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 100000</span></span></code></pre></div>
-<p>We can verify that, for <span class="math inline">\(m=1,\ldots,5\)</span>, the <span class="math inline">\(m\)</span>th fold of data is independent of the sum of the remaining folds, and that it has mean <span class="math inline">\(\frac{1}{5} \times 3\)</span>, while the remainder has mean <span class="math inline">\(\frac{4}{5} \times 3\)</span>. Once again, we use small empirical correlations as evidence of independence.</p>
+<p>We can verify that, for <span class="math inline">\(m=1,\ldots,5\)</span>, the <span class="math inline">\(m\)</span>th fold of data is independent of the sum of the remaining folds, and that it has mean <span class="math inline">\(\frac{1}{5} \times 5 = 1\)</span>, while the remainder has mean <span class="math inline">\(\frac{4}{5} \times 5 = 4\)</span>. Once again, we use small empirical correlations as evidence of independence.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (m <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>) {</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="st">&quot;-------&quot;</span>)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">&quot;fold&quot;</span>, m))</span>
@@ -196,36 +196,35 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  dat.test <span class="ot">&lt;-</span> folds[[m]]</span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  dat.train <span class="ot">&lt;-</span> dat <span class="sc">-</span> folds[[m]]</span>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">5</span><span class="sc">*</span><span class="fu">mean</span>(dat), <span class="fu">mean</span>(dat.test)))</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">c</span>(<span class="dv">4</span><span class="sc">/</span><span class="dv">5</span><span class="sc">*</span><span class="fu">mean</span>(dat), <span class="fu">mean</span>(dat.train)))</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">as.numeric</span>(<span class="fu">cor</span>(dat.test, dat.train)))</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;-------&quot;</span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;fold 1&quot;</span></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 0.5988201 0.5990102</span></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 2.39528 2.39509</span></span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 0.000691018</span></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;-------&quot;</span></span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;fold 2&quot;</span></span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 0.5988201 0.6065097</span></span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 2.395280 2.387591</span></span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 0.001430393</span></span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;-------&quot;</span></span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;fold 3&quot;</span></span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 0.5988201 0.5941541</span></span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 2.395280 2.399946</span></span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 0.0003254383</span></span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;-------&quot;</span></span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;fold 4&quot;</span></span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 0.5988201 0.5962563</span></span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 2.395280 2.397844</span></span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] -0.0002356422</span></span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;-------&quot;</span></span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;fold 5&quot;</span></span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 0.5988201 0.5981703</span></span>
-<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] 2.39528 2.39593</span></span>
-<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] -0.0003506916</span></span></code></pre></div>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">&quot;Test set mean&quot;</span>, <span class="fu">round</span>(<span class="fu">mean</span>(dat.test), <span class="dv">3</span>)))</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">&quot;Training set mean:&quot;</span>, <span class="fu">round</span>(<span class="fu">mean</span>(dat.train), <span class="dv">3</span>)))</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">&quot;Sample correlation:&quot;</span>, <span class="fu">round</span>(<span class="fu">as.numeric</span>(<span class="fu">cor</span>(dat.test, dat.train)),<span class="dv">4</span>)))</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;-------&quot;</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;fold 1&quot;</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;Test set mean 0.998&quot;</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;Training set mean: 3.992&quot;</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;Sample correlation: 7e-04&quot;</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;-------&quot;</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;fold 2&quot;</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;Test set mean 1.011&quot;</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;Training set mean: 3.979&quot;</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;Sample correlation: 0.0014&quot;</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;-------&quot;</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;fold 3&quot;</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;Test set mean 0.99&quot;</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;Training set mean: 4&quot;</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;Sample correlation: 3e-04&quot;</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;-------&quot;</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;fold 4&quot;</span></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;Test set mean 0.994&quot;</span></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;Training set mean: 3.996&quot;</span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;Sample correlation: -2e-04&quot;</span></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;-------&quot;</span></span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;fold 5&quot;</span></span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;Test set mean 0.997&quot;</span></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;Training set mean: 3.993&quot;</span></span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;Sample correlation: -4e-04&quot;</span></span></code></pre></div>
 </div>
 <div id="normal-distribution" class="section level1">
 <h1>Normal distribution</h1>
@@ -238,27 +237,42 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>dat.train <span class="ot">&lt;-</span> res<span class="sc">$</span>Xtr</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>dat.test <span class="ot">&lt;-</span> res<span class="sc">$</span>Xte</span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(dat.train), <span class="cf">function</span>(u) <span class="fu">cor</span>(dat.train[,u], dat.test[,u]))</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="do">##  [1] -0.0054039893  0.0170518402  0.0092961249 -0.0145605012  0.0209949092</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  [6] -0.0004228364  0.0055731047  0.0219910992 -0.0109886560  0.0005400666</span></span></code></pre></div>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>cors <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(dat.train), <span class="cf">function</span>(u) <span class="fu">round</span>(<span class="fu">cor</span>(dat.train[,u], dat.test[,u]), <span class="dv">4</span>))</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">&quot;Correlation between train and test in column&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>, <span class="st">&quot;:&quot;</span>, cors))</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="do">##  [1] &quot;Correlation between train and test in column 1 : -0.0054&quot;</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  [2] &quot;Correlation between train and test in column 2 : 0.0171&quot; </span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="do">##  [3] &quot;Correlation between train and test in column 3 : 0.0093&quot; </span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="do">##  [4] &quot;Correlation between train and test in column 4 : -0.0146&quot;</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="do">##  [5] &quot;Correlation between train and test in column 5 : 0.021&quot;  </span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a><span class="do">##  [6] &quot;Correlation between train and test in column 6 : -4e-04&quot; </span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="do">##  [7] &quot;Correlation between train and test in column 7 : 0.0056&quot; </span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a><span class="do">##  [8] &quot;Correlation between train and test in column 8 : 0.022&quot;  </span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="do">##  [9] &quot;Correlation between train and test in column 9 : -0.011&quot; </span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a><span class="do">## [10] &quot;Correlation between train and test in column 10 : 5e-04&quot;</span></span></code></pre></div>
 <p>The parameter <code>arg</code> must either be a scalar (in which case it is assumed that all elements of the data matrix have the same value of <span class="math inline">\(\sigma^2\)</span>), or its dimensions must match that of the data.</p>
 <p>We now explore the impact of using the “wrong” value of <span class="math inline">\(\sigma^2\)</span> while splitting. We generate a dataset with <span class="math inline">\(100,000\)</span> rows and <span class="math inline">\(3\)</span> columns. In the first column, the data are from a <span class="math inline">\(N(5, 0.1)\)</span> distribution. In the second column, they are from a <span class="math inline">\(N(5,2)\)</span> distribution. In the final column, they are from a <span class="math inline">\(N(5,20)\)</span> distribution.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">rnorm</span>(<span class="dv">100000</span>, <span class="at">mean=</span><span class="dv">5</span>, <span class="at">sd=</span><span class="fu">sqrt</span>(<span class="fl">0.1</span>)),</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>             <span class="fu">rnorm</span>(<span class="dv">100000</span>, <span class="at">mean=</span><span class="dv">5</span>, <span class="at">sd=</span><span class="fu">sqrt</span>(<span class="dv">2</span>)),</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>             <span class="fu">rnorm</span>(<span class="dv">100000</span>, <span class="at">mean=</span><span class="dv">5</span>, <span class="at">sd=</span><span class="fu">sqrt</span>(<span class="dv">20</span>)))</span></code></pre></div>
-<p>First, we datathin but we incorrectly that all items in the matrix have <span class="math inline">\(\sigma^2=2\)</span>. We see that we have negative correlation between the training and test sets in the first column (where we used a value of <span class="math inline">\(\sigma^2\)</span> that was too big), no correlation in the second column (where we used the correct value of <span class="math inline">\(\sigma^2\)</span>), and positive correlation in the last column (where we used a value of <span class="math inline">\(\sigma^2\)</span> that was too small). See our preprint for further explanation of this property.</p>
+<p>First, we datathin but we incorrectly assume that all items in the matrix have <span class="math inline">\(\sigma^2=2\)</span>. We see that we have negative correlation between the training and test sets in the first column (where we used a value of <span class="math inline">\(\sigma^2\)</span> that was too big), no correlation in the second column (where we used the correct value of <span class="math inline">\(\sigma^2\)</span>), and positive correlation in the last column (where we used a value of <span class="math inline">\(\sigma^2\)</span> that was too small). See our preprint for further explanation of this property.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">datathin</span>(dat, <span class="at">family=</span><span class="st">&quot;normal&quot;</span>, <span class="at">epsilon=</span><span class="fl">0.5</span>, <span class="at">arg=</span><span class="dv">2</span>)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>dat.train <span class="ot">&lt;-</span> res<span class="sc">$</span>Xtr</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>dat.test <span class="ot">&lt;-</span> res<span class="sc">$</span>Xte</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(dat.train), <span class="cf">function</span>(u) <span class="fu">cor</span>(dat.train[,u], dat.test[,u]))</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] -0.9051753032  0.0001091388  0.8181117290</span></span></code></pre></div>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>cors <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(dat.train), <span class="cf">function</span>(u) <span class="fu">round</span>(<span class="fu">cor</span>(dat.train[,u], dat.test[,u]), <span class="dv">4</span>))</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">&quot;Correlation between train and test in column&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="st">&quot;:&quot;</span>, cors))</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;Correlation between train and test in column 1 : -0.9052&quot;</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="do">## [2] &quot;Correlation between train and test in column 2 : 1e-04&quot;  </span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="do">## [3] &quot;Correlation between train and test in column 3 : 0.8181&quot;</span></span></code></pre></div>
 <p>To remedy the situation, we must let <code>arg</code> be a matrix that stores the correct <span class="math inline">\(\sigma^2\)</span> values.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>good_args <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">rep</span>(<span class="fl">0.1</span>, <span class="dv">100000</span>), <span class="fu">rep</span>(<span class="dv">2</span>, <span class="dv">100000</span>), <span class="fu">rep</span>(<span class="dv">20</span>,<span class="dv">100000</span>))</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">datathin</span>(dat, <span class="at">family=</span><span class="st">&quot;normal&quot;</span>, <span class="at">epsilon=</span><span class="fl">0.5</span>, <span class="at">arg=</span>good_args)</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>dat.train <span class="ot">&lt;-</span> res<span class="sc">$</span>Xtr</span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>dat.test <span class="ot">&lt;-</span> res<span class="sc">$</span>Xte</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(dat.train), <span class="cf">function</span>(u) <span class="fu">cor</span>(dat.train[,u], dat.test[,u]))</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="do">## [1]  0.0032153025 -0.0004907226  0.0069561926</span></span></code></pre></div>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>cors <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">ncol</span>(dat.train), <span class="cf">function</span>(u) <span class="fu">round</span>(<span class="fu">as.numeric</span>(<span class="fu">cor</span>(dat.train[,u], dat.test[,u])),<span class="dv">4</span>))</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">paste</span>(<span class="st">&quot;Correlation between train and test in column&quot;</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="st">&quot;:&quot;</span>, cors))</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="do">## [1] &quot;Correlation between train and test in column 1 : 0.0032&quot;</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="do">## [2] &quot;Correlation between train and test in column 2 : -5e-04&quot;</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="do">## [3] &quot;Correlation between train and test in column 3 : 0.007&quot;</span></span></code></pre></div>
 <p>We quickly note that an error will be thrown if <code>arg</code> is not a scalar and its dimensions do not match those of the data. The following code results in an error:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">datathin</span>(dat, <span class="at">family=</span><span class="st">&quot;normal&quot;</span>, <span class="at">epsilon=</span><span class="fl">0.5</span>, <span class="at">arg=</span><span class="fu">c</span>(<span class="fl">0.1</span>,<span class="dv">2</span>,<span class="dv">20</span>))</span></code></pre></div>
 </div>

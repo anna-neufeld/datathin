@@ -183,7 +183,6 @@ ggplot(data = NULL)+
 
 ## -----------------------------------------------------------------------------
 nFolds <- 10
-eps
 X.multithin <- multithin(X, family="normal", nfolds=nFolds, arg=1)
 totalMSEs <- matrix(NA, nrow=nFolds, ncol=10)
 for (fold in 1:nFolds) {

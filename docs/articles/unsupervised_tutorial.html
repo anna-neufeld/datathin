@@ -138,7 +138,7 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">10</span>,by<span class="op">=</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Number of Clusters"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Total within-cluster MSE"</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">""</span><span class="op">)</span></span></code></pre></div>
 <p><img src="unsupervised_tutorial_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
-<p>We quickly note that sample splitting is not an option here.</p>
+<p>We quickly note that sample splitting is not an option here, as explained in detail in <span class="citation">Gao, Bien, and Witten (2020)</span>.</p>
 </div>
 <div class="section level3">
 <h3 id="data-thinning">Data thinning<a class="anchor" aria-label="anchor" href="#data-thinning"></a>
@@ -158,7 +158,8 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">xlim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">ylim</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_fixed.html" class="external-link">coord_fixed</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Test set"</span><span class="op">)</span></span>
 <span><span class="va">p1</span><span class="op">+</span><span class="va">p2</span><span class="op">+</span><span class="va">p3</span></span></code></pre></div>
-<p><img src="unsupervised_tutorial_files/figure-html/unnamed-chunk-7-1.png" width="700"> Note that if we cluster the training set and apply those labels to the test set, our within-cluster MSE estimated on the test set will not be affected by overfitting.</p>
+<p><img src="unsupervised_tutorial_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<p>Note that if we cluster the training set and apply those labels to the test set, our within-cluster MSE estimated on the test set will begin to increase when the estimated clusters begin to overfit to the training data.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cluster.train</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/kmeans.html" class="external-link">kmeans</a></span><span class="op">(</span><span class="va">Xtrain</span>, centers<span class="op">=</span><span class="fl">3</span><span class="op">)</span><span class="op">$</span><span class="va">cluster</span><span class="op">)</span></span>
 <span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span>data<span class="op">=</span><span class="cn">NULL</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">Xtrain</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span>, y<span class="op">=</span><span class="va">Xtrain</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>, col<span class="op">=</span><span class="va">cluster.train</span><span class="op">)</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span></span>
@@ -169,7 +170,7 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_fixed.html" class="external-link">coord_fixed</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"Test set"</span><span class="op">)</span></span>
 <span><span class="va">p2</span><span class="op">+</span><span class="va">p3</span><span class="op">+</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/plot_layout.html" class="external-link">plot_layout</a></span><span class="op">(</span>guides<span class="op">=</span><span class="st">"collect"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="unsupervised_tutorial_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
-<p>This helps us make an MSE curve that is <em>not</em> monotonically decreasing in the number of clusters. We first need to write a data thinning within-cluster MSE function. Note that this function needs access to the training data (for computing cluster means) and the test data (for computing the deviations around these cluster means).</p>
+<p>This will result in a test set MSE curve that is not monotone decreasing. We first need to write a data thinning within-cluster MSE function. Note that this function needs access to the training data (for computing cluster means) and the test data (for computing the deviations around these cluster means).</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cluster.mse.datathin</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dat.train</span>, <span class="va">dat.test</span>, <span class="va">clusterlabs</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">totSS</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
@@ -265,7 +266,7 @@
 <span>  <span class="op">}</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">totSS</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">dat.test</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>The difference between this function and the one used above is that we scale the estimated mean for each cluster by <span class="math inline">\((1-eps)/eps\)</span>. This turns an estimate of <span class="math inline">\(E[X^{train}] = \eps E[X]\)</span> into an esitmate of <span class="math inline">\(X[X^{test}] = (1-\eps) E[X]\)</span>. We now show that this function works in practice if we data-thin with <span class="math inline">\(\eps = 0.9\)</span>.</p>
+<p>The difference between this function and the one used above is that we scale the estimated mean for each cluster by <span class="math inline">\((1-\epsilon)/\epsilon\)</span>. This turns an estimate of <span class="math inline">\(E[X^{train}] = \epsilon E[X]\)</span> into an esitmate of <span class="math inline">\(X[X^{test}] = (1-\epsilon) E[X]\)</span>. We now show that this function works in practice if we data-thin with <span class="math inline">\(\epsilon = 0.9\)</span>.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">X.thin</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/datathin.html">datathin</a></span><span class="op">(</span><span class="va">X</span>, family<span class="op">=</span><span class="st">"normal"</span>, epsilon<span class="op">=</span><span class="fl">0.9</span>, arg<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">Xtrain</span> <span class="op">&lt;-</span> <span class="va">X.thin</span><span class="op">$</span><span class="va">Xtr</span></span>
@@ -292,6 +293,7 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">10</span>,by<span class="op">=</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Number of Clusters"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ylab</a></span><span class="op">(</span><span class="st">"Total within-cluster MSE"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="unsupervised_tutorial_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
+<p>In general, the choice of epsilon that best balances the two competing needs of leaving enough information in the training set for accurate cluster estimation and estimation of MSE in the test set depends on the application.</p>
 </div>
 <div class="section level2">
 <h2 id="data-thinning-with-multiple-folds-">Data thinning with multiple folds.<a class="anchor" aria-label="anchor" href="#data-thinning-with-multiple-folds-"></a>
@@ -299,8 +301,6 @@
 <p>Finally, we show how to repeat the above analysis with multiple folds using the <code>multithin</code> function.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nFolds</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
-<span><span class="va">eps</span></span>
-<span><span class="co">## [1] 0.9</span></span>
 <span><span class="va">X.multithin</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/multithin.html">multithin</a></span><span class="op">(</span><span class="va">X</span>, family<span class="op">=</span><span class="st">"normal"</span>, nfolds<span class="op">=</span><span class="va">nFolds</span>, arg<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">totalMSEs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="cn">NA</span>, nrow<span class="op">=</span><span class="va">nFolds</span>, ncol<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">fold</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">nFolds</span><span class="op">)</span> <span class="op">{</span></span>
@@ -323,12 +323,21 @@
 <div class="section level2">
 <h2 id="alternate-distributions">Alternate distributions<a class="anchor" aria-label="anchor" href="#alternate-distributions"></a>
 </h2>
-<p>The code in this tutorial can be seamlessly updated to handle data that comes from a different distribution. We simply need to update the <code>family</code> argument in our calls to the <code>datathin</code> or <code>multithin</code> functions. Please see our introductory tutorial for a comprehensive list of the distributions that are available.</p>
+<p>The code in this tutorial can be seamlessly updated to handle data that comes from a different distribution. We simply need to update the <code>family</code> argument in our calls to the <code>datathin</code> or <code>multithin</code> functions. Please see our <a href="articles/introductory_tutorial.html">introductory tutorial</a> for a comprehensive list of the distributions that are available.</p>
 </div>
 <div class="section level2">
 <h2 id="alternate-unsupervised-learning-models">Alternate unsupervised learning models<a class="anchor" aria-label="anchor" href="#alternate-unsupervised-learning-models"></a>
 </h2>
 <p>Instead of estimating the number of clusters, we might wish to perform an analysis where we estimate the rank of a matrix (e.g. estimate the number of principal components that should be retained for further analysis). We will give an example of the principal components task in a future tutorial.</p>
+</div>
+<div class="section level2">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-gao2020selective" class="csl-entry">
+Gao, Lucy L, Jacob Bien, and Daniela Witten. 2020. <span>“Selective Inference for Hierarchical Clustering.”</span> <em>arXiv Preprint arXiv:2012.02936</em>.
+</div>
+</div>
 </div>
   </div>
 

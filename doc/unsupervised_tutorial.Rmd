@@ -1,8 +1,9 @@
 ---
 title: "Unsupervised learning tutorial" 
 output: rmarkdown::html_vignette
+bibliography: latent.bib
 vignette: >
-  %\VignetteIndexEntry{Unsupervised tutorial}
+  %\VignetteIndexEntry{Unsupervised learning tutorial}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -86,7 +87,7 @@ ggplot(data = NULL)+
 ```
 
 
-We quickly note that sample splitting is not an option here.
+We quickly note that sample splitting is not an option here, as explained in detail in @gao2020selective. 
 
 ## Data thinning
 
@@ -107,7 +108,8 @@ p3 <- ggplot(data=NULL, aes(x=Xtest[,1], y=Xtest[,2]))+geom_point()+
   coord_fixed()+ggtitle("Test set")
 p1+p2+p3
 ```
-Note that if we cluster the training set and apply those labels to the test set, our within-cluster MSE estimated on the test set will not be affected by overfitting. 
+
+Note that if we cluster the training set and apply those labels to the test set, our within-cluster MSE estimated on the test set will begin to increase when the estimated clusters begin to overfit to the training data. 
 
 ```{r}
 cluster.train <- as.factor(kmeans(Xtrain, centers=3)$cluster)
@@ -120,7 +122,7 @@ p3 <- ggplot(data=NULL, aes(x=Xtest[,1], y=Xtest[,2], col=cluster.train))+geom_p
 p2+p3+plot_layout(guides="collect")
 ```
 
-This helps us make an MSE curve that is *not* monotonically decreasing in the number of clusters. We first need to write a data thinning within-cluster MSE function. Note that this function needs access to the training data (for computing cluster means) and the test data (for computing the deviations around these cluster means).
+This will result in a test set MSE curve that is not monotone decreasing. We first need to write a data thinning within-cluster MSE function. Note that this function needs access to the training data (for computing cluster means) and the test data (for computing the deviations around these cluster means).
 
 ```{r}
 cluster.mse.datathin <- function(dat.train, dat.test, clusterlabs) {
@@ -230,7 +232,7 @@ cluster.mse.datathin <- function(dat.train, dat.test, clusterlabs, eps=0.5) {
 }
 ```
 
-The difference between this function and the one used above is that we scale the estimated mean for each cluster by $(1-eps)/eps$. This turns an estimate of $E[X^{train}] = \eps E[X]$ into an esitmate of $X[X^{test}] = (1-\eps) E[X]$. We now show that this function works in practice if we data-thin with $\eps = 0.9$. 
+The difference between this function and the one used above is that we scale the estimated mean for each cluster by $(1-\epsilon)/\epsilon$. This turns an estimate of $E[X^{train}] = \epsilon E[X]$ into an esitmate of $X[X^{test}] = (1-\epsilon) E[X]$. We now show that this function works in practice if we data-thin with $\epsilon = 0.9$. 
 
 ```{r}
 X.thin <- datathin(X, family="normal", epsilon=0.9, arg=1)
@@ -262,6 +264,7 @@ ggplot(data = NULL)+
 
 ```
 
+In general, the choice of epsilon that best balances the two competing needs of leaving enough information in the training set for accurate cluster estimation and estimation of MSE in the test set depends on the application. 
 
 # Data thinning with multiple folds.
 
@@ -269,7 +272,6 @@ Finally, we show how to repeat the above analysis with multiple folds using the 
 
 ```{r}
 nFolds <- 10
-eps
 X.multithin <- multithin(X, family="normal", nfolds=nFolds, arg=1)
 totalMSEs <- matrix(NA, nrow=nFolds, ncol=10)
 for (fold in 1:nFolds) {
@@ -293,10 +295,13 @@ We see that, by averaging over multiple folds, we reduce the noise associated wi
 
 # Alternate distributions
 
-The code in this tutorial can be seamlessly updated to handle data that comes from a different distribution. We simply need to update the ``family`` argument in our calls to the ``datathin`` or `multithin` functions. Please see our introductory tutorial for a comprehensive list of the distributions that are available. 
+The code in this tutorial can be seamlessly updated to handle data that comes from a different distribution. We simply need to update the ``family`` argument in our calls to the ``datathin`` or `multithin` functions. Please see our [introductory tutorial](articles/introductory_tutorial.html) for a comprehensive list of the distributions that are available. 
 
 # Alternate unsupervised learning models
 
 Instead of estimating the number of clusters, we might wish to perform an analysis where we estimate the rank of a matrix (e.g. estimate the number of principal components that should be retained for further analysis). We will give an example of the principal components task in a future tutorial.
+
+
+# References
 
 
