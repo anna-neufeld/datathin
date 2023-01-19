@@ -1,7 +1,7 @@
 What is datathin?
 -----
 
-The ``datathin`` R package splits a random variable (or a vector or matrix of random variables) into an independent training set and a test set using the methodology introduced in Neufeld et al., 2023 [(link to preprint coming soon)](...). 
+The ``datathin`` R package splits a random variable (or a vector or matrix of random variables) into an independent training set and a test set using the methodology introduced in Neufeld et al., 2023 [(link to preprint)](https://arxiv.org/abs/2301.07276). 
 
 How can I get datathin?
 -----
@@ -19,7 +19,7 @@ For now, you can check our our [introductory tutorial](articles/introduction_tut
 
 More tutorials for this package are coming soon! We will provide examples of how to use ``datathin`` for tasks such as model evaluation and inference after model selection under a variety of distributional assumptions. 
 
-To learn more, check out our preprint [(link to preprint coming soon)](...).
+To learn more, check out [our preprint](https://arxiv.org/abs/2301.07276). 
 
 To reproduce the figures from our preprint, please see the following repository: [https://github.com/anna-neufeld/datathin_paper](https://github.com/anna-neufeld/datathin_paper). 
 
