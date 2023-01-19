@@ -136,7 +136,7 @@ dat <- cbind(rnorm(100000, mean=5, sd=sqrt(0.1)),
              rnorm(100000, mean=5, sd=sqrt(20)))
 ```
 
-First, we datathin but we incorrectly assume that all items in the matrix have $\sigma^2=2$. We see that we have negative correlation between the training and test sets in the first column (where we used a value of $\sigma^2$ that was too big), no correlation in the second column (where we used the correct value of $\sigma^2$), and positive correlation in the last column (where we used a value of $\sigma^2$ that was too small). See our preprint for further explanation of this property. 
+First, we datathin but we incorrectly assume that all items in the matrix have $\sigma^2=2$. We see that we have negative correlation between the training and test sets in the first column (where we used a value of $\sigma^2$ that was too big), no correlation in the second column (where we used the correct value of $\sigma^2$), and positive correlation in the last column (where we used a value of $\sigma^2$ that was too small). See our [preprint](https://arxiv.org/abs/2301.07276) for further explanation of this property. 
 
 ```{r}
 res <- datathin(dat, family="normal", epsilon=0.5, arg=2)

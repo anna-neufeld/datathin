@@ -29,7 +29,7 @@ The scRNA-seq dataset analyzed in our paper is available for free from [10X geno
 References 
 ----
 
-Neufeld, A.,Dharamshi, A., Gao, L.L. & Witten, D. (2023), ‘Data thinning for convolution-closed distributions’, 
+Neufeld, A.,Dharamshi, A., Gao, L.L. & Witten, D. (2023), ‘Data thinning for convolution-closed distributions’. arXiv:2301.07276. 
 
 
 

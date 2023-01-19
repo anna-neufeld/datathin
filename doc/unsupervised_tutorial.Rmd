@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
 ```
 
-Welcome to the `datathin` package. In this tutorial, we will show how to use data thinning for model evaluation in the context of unsupervised learning. For more information, see our preprint (link coming soon).
+Welcome to the `datathin` package. In this tutorial, we will show how to use data thinning for model evaluation in the context of unsupervised learning. For more information, see our [preprint](https://arxiv.org/abs/2301.07276).
 
 Before getting started with this tutorial, we recommend that you read our introductory tutorial. You also should ensure that the package is installed and loaded. We will also be using the packages `ggplot2` and `patchwork`, so those should also be installed and loaded. 
 
