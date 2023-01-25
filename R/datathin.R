@@ -116,12 +116,13 @@ gammasplit <- function(data, epsilon, shape) {
 #' @export
 #' 
 #' @param data A scalar, vector, or matrix of data. 
-#' @param family The name of the distribution of the data. Options are "poisson", "negative binomial", "normal" (equivalently "gaussian),
+#' @param family The name of the distribution of the data. Options are "poisson", "negative binomial", "normal" (equivalently "gaussian"),
 #' "binomial", "exponential", or "gamma". 
 #' @param epsilon The tuning parameter for thinning; must be between 0 and 1. Larger values correspond to more information 
 #' in the training set and less in the test set.
-#' @param arg The extra parameter that must be known in order to split. Not needed for Poisson, but needed for all other distributions.
-#' Should be a scalar or should match dimensions of X. 
+#' @param arg The extra parameter that must be known in order to split. Not needed for Poisson or exponential, but needed for all other distributions.
+#' Should be a scalar or should match dimensions of X. When family="normal", pass in the variance. When family="negative binomial" or "binomial", pass in the size parameter.
+#' When family="gamma", pass in the shape parameter. 
 datathin <- function(data, family, epsilon=0.5, arg=NULL) {
   
   if (!is.null(arg)) {

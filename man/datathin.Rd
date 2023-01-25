@@ -9,14 +9,15 @@ datathin(data, family, epsilon = 0.5, arg = NULL)
 \arguments{
 \item{data}{A scalar, vector, or matrix of data.}
 
-\item{family}{The name of the distribution of the data. Options are "poisson", "negative binomial", "normal" (equivalently "gaussian),
+\item{family}{The name of the distribution of the data. Options are "poisson", "negative binomial", "normal" (equivalently "gaussian"),
 "binomial", "exponential", or "gamma".}
 
 \item{epsilon}{The tuning parameter for thinning; must be between 0 and 1. Larger values correspond to more information
 in the training set and less in the test set.}
 
-\item{arg}{The extra parameter that must be known in order to split. Not needed for Poisson, but needed for all other distributions.
-Should be a scalar or should match dimensions of X.}
+\item{arg}{The extra parameter that must be known in order to split. Not needed for Poisson or exponential, but needed for all other distributions.
+Should be a scalar or should match dimensions of X. When family="normal", pass in the variance. When family="negative binomial" or "binomial", pass in the size parameter.
+When family="gamma", pass in the shape parameter.}
 }
 \description{
 Takes a dataset (scalar, vector, or matrix) and returns a training set and a test set that sum to the original data matrix.

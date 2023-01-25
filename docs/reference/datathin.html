@@ -69,7 +69,7 @@
 
 
 <dt>family</dt>
-<dd><p>The name of the distribution of the data. Options are "poisson", "negative binomial", "normal" (equivalently "gaussian),
+<dd><p>The name of the distribution of the data. Options are "poisson", "negative binomial", "normal" (equivalently "gaussian"),
 "binomial", "exponential", or "gamma".</p></dd>
 
 
@@ -79,8 +79,9 @@ in the training set and less in the test set.</p></dd>
 
 
 <dt>arg</dt>
-<dd><p>The extra parameter that must be known in order to split. Not needed for Poisson, but needed for all other distributions.
-Should be a scalar or should match dimensions of X.</p></dd>
+<dd><p>The extra parameter that must be known in order to split. Not needed for Poisson or exponential, but needed for all other distributions.
+Should be a scalar or should match dimensions of X. When family="normal", pass in the variance. When family="negative binomial" or "binomial", pass in the size parameter.
+When family="gamma", pass in the shape parameter.</p></dd>
 
 </dl></div>
 
