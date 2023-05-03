@@ -16,8 +16,9 @@ datathin(data, family, epsilon = 0.5, arg = NULL)
 in the training set and less in the test set.}
 
 \item{arg}{The extra parameter that must be known in order to split. Not needed for Poisson or exponential, but needed for all other distributions.
-Should be a scalar or should match dimensions of X. When family="normal", pass in the variance. When family="negative binomial" or "binomial", pass in the size parameter.
-When family="gamma", pass in the shape parameter.}
+Should be a scalar or should match dimensions of X. When family="normal", pass in the variance. When family="negative binomial" or "binomial", pass in the size parameter
+(using the parameterization of rbinom and rnbinom).
+When family="gamma", pass in the shape parameter (using the parameterization of rgamma).}
 }
 \description{
 Takes a dataset (scalar, vector, or matrix) and returns a training set and a test set that sum to the original data matrix.
