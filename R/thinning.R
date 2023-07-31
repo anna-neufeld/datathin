@@ -1,6 +1,5 @@
 ##### ADD IN CALLS TO FIX ARG AND AS.MATRIX DATA IN HERE NOT IN THE HELPERS
-#Convert vectors to matrices for consistent processing later
-dmat <- as.matrix(data)
+
 
 #' Takes a dataset (scalar, vector, or matrix) and returns a training set and a test set that sum to the original data matrix. 
 #' 
@@ -8,98 +7,132 @@ dmat <- as.matrix(data)
 #' @export
 #' 
 #' @param data A scalar, vector, or matrix of data. 
-#' @param family The name of the distribution of the data. Options are "poisson", "negative binomial", "normal" 
-#' (equivalently "gaussian"),
-#' "binomial", "exponential", or "gamma". 
-#' @param epsilon The tuning parameter for thinning; must be between 0 and 1. Larger values correspond to more information 
-#' in the training set and less in the test set.
-#' @param arg The extra parameter that must be known in order to split. Not needed for Poisson or exponential, but needed for 
-#' all other distributions.
-#' Should be a scalar or should match dimensions of X. When family="normal", pass in the variance. When family="negative binomial" 
-#' or "binomial", 
-#' pass in the size parameter.
-#' When family="gamma", pass in the shape parameter. 
-datathin <- function(data, family, epsilon=0.5, arg=NULL, tuning=NULL) {
+#' @param family The distribution of the data. Options are "poisson", "negative binomial", "normal" (or "gaussian"), 
+#' "normal-variance" (or "gaussian-variance"), "mvnormal" (or "mvgaussian"), "binomial", "multinomial", "exponential",
+#' "gamma", "chi-squared", "gamma-weibull", "weibull", "pareto", "shifted-exponential", "scaled-uniform", "scaled-beta".
+#' @param K The number of folds. Note that for the "chi-squared" and "gamma-weibull" decompositions, the number of folds implies the
+#' degrees of freedom and shape parameters respectively.
+#' @param epsilon The tuning parameter for convolution-closed data thinning; must be a simplex vector of length K. Larger values 
+#' correspond to more information in the respective fold. Available for "poisson", "negative binomial", "normal" (or "gaussian"),
+#' "mvnormal" (or "mvgaussian"), "binomial", "multinomial", "exponential", and "gamma" families. If epsilon is not supplied,
+#' rep(1/K, K) is used.
+#' @param arg The extra parameter that must be known in order to thin. Either a scalar or a matrix with the same dimensions as data 
+#' (excluding "mvnormal" (or "mvgaussian") and "multinomial" families; see below). 
+#' Requirements vary by decomposition:
+#' * Not needed for "poisson", "exponential", "chi-squared", or "scaled-uniform" distributions.
+#' * "negative binomial" requires the size parameter.
+#' * "normal" (or "gaussian") requires the variance.
+#' * "normal-variance" (or "gaussian-variance") requires the mean.
+#' * "mvnormal" (or "mvgaussian") requires the covariance matrix. If the dimensions of data are nxp, arg must be nxpxp.
+#' * "binomial" and "multinomial" require the number of trials. For "multinomial", if the dimensions of data are nxp, arg must be a 
+#' vector of length n.
+#' * "gamma", "gamma-weibull", and "weibull" requires the shape parameter.
+#' * "pareto" requires the location paramter.
+#' * "shifted-exponential" requires the rate parameter.
+#' * "scaled-beta" requires the first shape parameter.  
+#' 
+#' Please refer to \url{https://arxiv.org/abs/2301.07276} and \url{https://arxiv.org/abs/2303.12931} for further details.
+#' 
+#' @details See \url{https://anna-neufeld.github.io/datathin/articles/introduction_tutorial.html} for examples of each decomposition.
+datathin <- function(data, family, K=2, epsilon=NULL, arg=NULL) {
+  #Convert vectors to matrices for consistent processing later
+  data <- as.matrix(data)
+  np <- dim(data)
   
-  if (!is.null(arg)) {
-    if (is.numeric(arg)) {
-      if (length(arg) != 1) {
-        if (length(arg) != length(data)) {
-          stop("If `arg` is not a scalar, its dimensions must match those of `data`.")
-        } 
-      }
+  #arg dimension check
+  if (family %in% c("poisson", "exponential", "chi-squared", "scaled-uniform")) {
+    if (!is.null(arg)) {
+      warning(paste0("Extra parameter provided was not used in ", family, " thinning."))
+    }
+  } else {
+    if (is.null(arg)) {
+      stop("Extra parameter missing.")
+    } else if (!is.numeric(arg)) {
+      stop("Non-numeric parameter provided.")
     } else {
-      if (dim(arg) != dim(data)) {
-        stop("If `arg` is not a scalar, its dimensions must match those of `data`.")
+      if (family %in% c("mvnormal", "mvgaussian")) {
+        if (length(dim(arg)) == 2) {
+          if (any(dim(arg) != c(np[2], np[2]))) {
+            stop("Incorrect dimensions for multivariate normal covariance matrices.")
+          }
+        } else if (length(dim(arg)) == 3) {
+          if (any(dim(arg) != c(np[1], np[2], np[2]))) {
+            stop("Incorrect dimensions for multivariate normal covariance matrices.")
+          }
+        }
+      } else if (family == "multinomial") {
+        if (!(length(arg) %in% c(1, np[1]))) {
+          stop("Incorrect dimensions for multinomial trials parameter.")
+        }
+      } else {
+        if (length(arg) > 1) {
+          if (any(dim(as.matrix(arg)) != dim(data))) {
+            stop("If `arg` is not a scalar, its dimensions must match those of `data`.")
+          }
+        }
       }
+    }
+  }
+  
+  #Set epsilon
+  if (family %in% c("poisson", "negative binomial", "normal", "gaussian", "mvnormal", 
+                   "mvgaussian", "binomial", "multinomial", "exponential", "gamma")) {
+    if (is.null(epsilon)) {
+      epsilon <- rep(1/K, K)
+    } else {
+      if (sum(epsilon) != 1) {
+        stop("Epsilon does not sum to 1.")
+      }
+      if (length(epsilon) != K) {
+        warning("K parameter will be ignored in favour of the length of epsilon.")
+      }
+    }
+  }
+
+  
+  
+  # Convert scalar arg to matrix
+  if (length(arg) == 1) {
+    if (family == "multinomial") {
+      arg <- rep(arg, np[1])
+    } else {
+      arg <- matrix(arg, nrow=np[1], ncol=np[2])
     }
   }
   
   if (family == "poisson") {
-    poissplit(data, epsilon)
+    poisthin(data, epsilon)
   } else if (family == "negative binomial") {
-    nbsplit(data, epsilon, arg)
+    nbthin(data, epsilon, arg)
   } else if (family %in% c("normal", "gaussian")) {
-    normsplit(data, epsilon, sqrt(arg))
+    normthin(data, epsilon, arg)
+  } else if (family %in% c("normal-variance", "gaussian-variance")) {
+    normvarthin(data, arg, K)
+  } else if (family %in% c("mvnormal", "mvgaussian")) {
+    mvnormthin(data, epsilon, arg)
   } else if (family == "binomial") {
-    if ((epsilon*arg %% 1) != 0 | ((1-epsilon)*arg %% 1) != 0) {
-      print("Hypergeometric counts are non-integers.")
-    } else {
-      binomsplit(data, epsilon, arg)
-    }
+    binomthin(data, epsilon, arg)
+  } else if (family == "multinomial") {
+    multinomthin(data, epsilon, arg) 
   } else if (family == "exponential") {
-    gammasplit(data, epsilon, 1)
+    gammathin(data, epsilon, matrix(1, nrow=np[1], ncol=np[2]))
   } else if (family == "gamma") {
-    gammasplit(data, epsilon, arg)
+    gammathin(data, epsilon, arg)
+  } else if (family == "chi-squared") {
+    chisqthin(data, K)
+  } else if (family == "gamma-weibull") {
+    gammaweibullthin(data, K, arg)
+  } else if (family == "weibull") {
+    weibullthin(data, arg, K)
+  } else if (family == "pareto") {
+    paretothin(data, arg, K) 
+  } else if (family == "shifted-exponential") {
+    shiftexpthin(data, arg, K)
+  } else if (family == "scaled-uniform") {
+    scaledbetathin(data, matrix(1, nrow=np[1], ncol=np[2]), K)
+  } else if (family == "scaled-beta") {
+    scaledbetathin(data, arg, K)
   } else {
     print("Invalid family argument")
-  }
-}
-
-#' Takes a dataset (scalar, vector, or matrix) and returns multiple folds of data that can be recombined into to the original data matrix using some function T.
-#' 
-#' 
-#' @export
-#' 
-#' @param data A scalar, vector, or matrix of data. 
-#' @param decomp The name of the distribution of the data. Options are "poisson", "negbin", "normal-mean" (equivalently "gaussian-mean"),
-#' "normal-variance" (equivalently "gaussian-variance"),
-#' "binomial", "exponential", or "gamma-rate". 
-#' @param nfolds The number of folds to create from the data. Note that in certain decompositions, the number of folds implies a value for one 
-#' of the parameters. For example, specifying the number of folds with the "gamma-weibull" or "gamma-chisq" decompositions implies a value for 
-#' the shape parameter of the gamma distribution. In the special case of the "beta-gamma" decomposition, where the number of folds is fixed at 2, 
-#' the nfolds argument is repurposed as the tuning parameter.
-#' refer to \url{https://arxiv.org/abs/2303.12931} for further details.
-#' @param arg The extra parameter that must be known in order to split. 
-gdt <- function(data, decomp, nfolds=2, arg=NULL) {
-  
-  if (!is.null(arg)) {
-    if (is.numeric(arg)) {
-      if (length(arg) != 1) {
-        if (length(arg) != length(data)) {
-          stop("If `arg` is not a scalar, its dimensions must match those of `data`.")
-        } 
-      }
-    } else {
-      if (dim(arg) != dim(data)) {
-        stop("If `arg` is not a scalar, its dimensions must match those of `data`.")
-      }
-    }
-  }
-  
-  if (decomp %in% c("poisson", "negbin", "normal-mean", "gaussian-mean", "binomial", "exponential", "gamma-rate")) {
-    family <- case_when(
-      decomp == "negbin" ~ "negative binomial",
-      decomp %in% c("normal-mean", "gaussian-mean") ~ "normal",
-      decomp == "gamma-rate" ~ "gamma",
-      TRUE ~ "decomp"
-    )
-    multithin(data, family, nfolds=nfolds, arg=arg)
-  } else if (decomp == "normal-variance") {
-    multithin((data-arg)^2, "gamma", nfolds=nfolds, arg=0.5)
-  } else if (decomp == "beta-gamma") {
-    betagammasplit(data, nfolds, arg)
-  } else {
-    print("Invalid decomposition argument.")
   }
 }

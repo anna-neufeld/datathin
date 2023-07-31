@@ -4,12 +4,12 @@ Version: 1.0
 Authors@R: 
     c(person("Anna", "Neufeld", , "aneufeld@uw.edu", role = c("aut", "cre")),
     person("Ameer", "Dharamshi", , "adharams@uw.edu", role = c("aut")))
-Description: Implements the data thinning methodology from the paper "Data thinning for convolution-closed distributions" (Neufeld et al., 2023). 
+Description: Implements the data thinning methodology from the papers "Data thinning for convolution-closed distributions" (Neufeld et al., 2023) and "Generalized Data Thinning Using Sufficient Statistics" (Dharamshi et al., 2023). 
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.0
-Imports: VGAM, knitr
+RoxygenNote: 7.2.3
+Imports: VGAM, knitr, extraDistr, mvtnorm
 Suggests:
 VignetteBuilder: knitr
 URL: https://github.com/anna-neufeld/datathin,

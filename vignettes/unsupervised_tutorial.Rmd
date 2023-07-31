@@ -94,9 +94,9 @@ We quickly note that sample splitting is not an option here, as explained in det
 Using the same dataset as above, we now apply data thinning. We call the function `datathin` with `family="normal"`. For simplicity, we assume that the noise variance $\sigma^2$ is known. 
 
 ```{r}
-X.thin <- datathin(X, family="normal", epsilon=0.5, arg=1)
-Xtrain <- X.thin$Xtr
-Xtest <- X.thin$Xte
+X.thin <- datathin(X, family="normal", arg=1)
+Xtrain <- X.thin[,,1]
+Xtest <- X.thin[,,2]
 p1 <- ggplot(data=NULL, aes(x=X[,1], y=X[,2]))+geom_point()+
   xlim(c(-3,3))+ylim(c(-3,3))+
   coord_fixed()+ggtitle("All data")
@@ -176,9 +176,9 @@ ggplot(data=NULL, aes(x=X[,1], y=X[,2], col=trueClusters))+geom_point()
 We first visualize what happens to this data under data thinning.
 
 ```{r}
-X.thin <- datathin(X, family="normal", epsilon=0.5, arg=1)
-Xtrain <- X.thin$Xtr
-Xtest <- X.thin$Xte
+X.thin <- datathin(X, family="normal", arg=1)
+Xtrain <- X.thin[,,1]
+Xtest <- X.thin[,,2]
 p1 <- ggplot(data=NULL, aes(x=X[,1], y=X[,2], col=trueClusters))+geom_point()+
   xlim(c(-6,6))+ylim(c(-6,6))+
   coord_fixed()+ggtitle("All data")
@@ -232,12 +232,12 @@ cluster.mse.datathin <- function(dat.train, dat.test, clusterlabs, eps=0.5) {
 }
 ```
 
-The difference between this function and the one used above is that we scale the estimated mean for each cluster by $(1-\epsilon)/\epsilon$. This turns an estimate of $E[X^{train}] = \epsilon E[X]$ into an esitmate of $X[X^{test}] = (1-\epsilon) E[X]$. We now show that this function works in practice if we data-thin with $\epsilon = 0.9$. 
+The difference between this function and the one used above is that we scale the estimated mean for each cluster by $(1-\epsilon)/\epsilon$. This turns an estimate of $E[X^{train}] = \epsilon E[X]$ into an estimate of $X[X^{test}] = (1-\epsilon) E[X]$. We now show that this function works in practice if we data-thin with $\epsilon = 0.9$. 
 
 ```{r}
-X.thin <- datathin(X, family="normal", epsilon=0.9, arg=1)
-Xtrain <- X.thin$Xtr
-Xtest <- X.thin$Xte
+X.thin <- datathin(X, family="normal", epsilon=c(0.9,0.1), arg=1)
+Xtrain <- X.thin[,,1]
+Xtest <- X.thin[,,2]
 p1 <- ggplot(data=NULL, aes(x=X[,1], y=X[,2], col=trueClusters))+geom_point()+
   xlim(c(-6,6))+ylim(c(-6,6))+
   coord_fixed()+ggtitle("All data")
@@ -268,14 +268,14 @@ In general, the choice of epsilon that best balances the two competing needs of 
 
 # Data thinning with multiple folds.
 
-Finally, we show how to repeat the above analysis with multiple folds using the `multithin` function.
+Finally, we show how to repeat the above analysis with multiple folds using the ``K`` argument in the ``datathin`` function.
 
 ```{r}
 nFolds <- 10
-X.multithin <- multithin(X, family="normal", nfolds=nFolds, arg=1)
+X.multithin <- datathin(X, family="normal", K=nFolds, arg=1)
 totalMSEs <- matrix(NA, nrow=nFolds, ncol=10)
 for (fold in 1:nFolds) {
-  Xtest <- X.multithin[[fold]]
+  Xtest <- X.multithin[,,fold]
   Xtrain <- X-Xtest
   clusters.train <- sapply(1:10, function(u) kmeans(Xtrain, centers= u)$cluster)
   totalMSEs[fold,] <- apply( clusters.train, 2, function(u) cluster.mse.datathin(Xtrain,Xtest, u, (nFolds-1)/nFolds))
@@ -295,7 +295,7 @@ We see that, by averaging over multiple folds, we reduce the noise associated wi
 
 # Alternate distributions
 
-The code in this tutorial can be seamlessly updated to handle data that comes from a different distribution. We simply need to update the ``family`` argument in our calls to the ``datathin`` or `multithin` functions. Please see our [introductory tutorial](introduction_tutorial.html) for a comprehensive list of the distributions that are available. 
+The code in this tutorial can be seamlessly updated to handle data that comes from a different distribution. We simply need to update the ``family`` argument in our calls to the ``datathin`` function. Please see our [introductory tutorial](introduction_tutorial.html) for a comprehensive list of the distributions that are available. 
 
 # Alternate unsupervised learning models
 

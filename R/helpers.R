@@ -17,7 +17,7 @@ poisthin <- function(data, epsilon) {
     return()
   }
   
-  X <- apply(data, 1:2, function(x) rmulitnom(1, x, epsilon))
+  X <- apply(data, 1:2, function(x) rmultinom(1, x, epsilon))
   X <- aperm(X, c(2,3,1))
   
   return(X)
@@ -95,6 +95,13 @@ normvarthin <- function(data, mu, K) {
 #' @param sigma multivariate normal covariance parameter.
 #' @importFrom mvtnorm rmvnorm
 mvnormthin <- function(data, epsilon, sigma) {
+  if (length(dim(sigma)) == 2) {
+    temp <- array(0, dim=c(dim(data)[1], dim(sigma)))
+    for (i in 1:dim(data)[1]) {
+      temp[i,,] <- sigma
+    }
+    sigma <- temp
+  }
   if (dim(sigma)[2] != dim(sigma)[3]) {
     print("Sigma matrices must be square.")
   }
@@ -156,8 +163,8 @@ binomthin <- function(data, epsilon, pop) {
 #' @noRd
 #' 
 #' @param data data (each row is assumed to follow a multinomial distribution).
-#' @param epsilon DTCC thinning parameter (scalar-valued).
-#' @param pop multinomial population parameter (simplex-valued).
+#' @param epsilon DTCC thinning parameter (simplex-valued).
+#' @param pop multinomial population parameter (scalar-valued).
 #' @importFrom extraDistr rmvhyper
 multinomthin <- function(data, epsilon, pop) {
   if (min(data) < 0) {
@@ -234,8 +241,8 @@ chisqthin <- function(data, K) {
     return()
   }
   
-  X <- apply(data, 1:2, function(x) {Z <- rmvnorm(1, mean=rep(0, K)); sqrt(x)*Z/sum(Z^2)})
-  X <- aperm(Z, c(2,3,1))
+  X <- apply(data, 1:2, function(x) {Z <- rmvnorm(1, mean=rep(0, K)); sqrt(x)*Z/sqrt(sum(Z^2))})
+  X <- aperm(X, c(2,3,1))
   
   return(X)
 }
@@ -254,7 +261,9 @@ gammaweibullthin <- function(data, K, nu) {
   }
   
   X <- gammathin(data, rep(1, K)/K, matrix(K, nrow=nrow(data), ncol=ncol(data)))
-  X <- X^(1/nu)
+  for (k in 1:K) {
+    X[,,k] <- X[,,k]^(1/nu)
+  }
   
   return(X)
 }
@@ -322,8 +331,8 @@ shiftexpthin <- function(data, lambda, K) {
   }
   
   X <- mapply(function(x,y) x + rexp(K, y/K), data, lambda)
-  X <- aperm(X, c(2,3,1))
-  C <- matrix(rcat(prod(dim(data)), rep(1,K)/k), nrow=nrow(data))
+  X <- aperm(array(X, dim=c(K,dim(data))), c(2,3,1))
+  C <- matrix(rcat(prod(dim(data)), rep(1,K)/K), nrow=nrow(data))
   
   for (i in 1:nrow(data)) {
     for (j in 1:ncol(data)) {
@@ -395,7 +404,8 @@ scaledbetathin <- function(data, alpha, K) {
   }
   
   X <- mapply(function(x,y) x*rbeta(K, y/K, 1), data, alpha)
-  X <- aperm(X, c(2,3,1))
+  X <- aperm(array(X, dim=c(K,dim(data))), c(2,3,1))
+  
   C <- matrix(rcat(prod(dim(data)), rep(1,K)/K), nrow=nrow(data))
   
   for (i in 1:nrow(data)) {
