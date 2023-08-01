@@ -50,9 +50,9 @@ ggplot(data = NULL)+
   xlab("Number of Clusters") + ylab("Total within-cluster MSE")+labs(col="")
 
 ## -----------------------------------------------------------------------------
-X.thin <- datathin(X, family="normal", epsilon=0.5, arg=1)
-Xtrain <- X.thin$Xtr
-Xtest <- X.thin$Xte
+X.thin <- datathin(X, family="normal", arg=1)
+Xtrain <- X.thin[,,1]
+Xtest <- X.thin[,,2]
 p1 <- ggplot(data=NULL, aes(x=X[,1], y=X[,2]))+geom_point()+
   xlim(c(-3,3))+ylim(c(-3,3))+
   coord_fixed()+ggtitle("All data")
@@ -113,9 +113,9 @@ X <- rbind(
 ggplot(data=NULL, aes(x=X[,1], y=X[,2], col=trueClusters))+geom_point()
 
 ## -----------------------------------------------------------------------------
-X.thin <- datathin(X, family="normal", epsilon=0.5, arg=1)
-Xtrain <- X.thin$Xtr
-Xtest <- X.thin$Xte
+X.thin <- datathin(X, family="normal", arg=1)
+Xtrain <- X.thin[,,1]
+Xtest <- X.thin[,,2]
 p1 <- ggplot(data=NULL, aes(x=X[,1], y=X[,2], col=trueClusters))+geom_point()+
   xlim(c(-6,6))+ylim(c(-6,6))+
   coord_fixed()+ggtitle("All data")
@@ -156,9 +156,9 @@ cluster.mse.datathin <- function(dat.train, dat.test, clusterlabs, eps=0.5) {
 }
 
 ## -----------------------------------------------------------------------------
-X.thin <- datathin(X, family="normal", epsilon=0.9, arg=1)
-Xtrain <- X.thin$Xtr
-Xtest <- X.thin$Xte
+X.thin <- datathin(X, family="normal", epsilon=c(0.9,0.1), arg=1)
+Xtrain <- X.thin[,,1]
+Xtest <- X.thin[,,2]
 p1 <- ggplot(data=NULL, aes(x=X[,1], y=X[,2], col=trueClusters))+geom_point()+
   xlim(c(-6,6))+ylim(c(-6,6))+
   coord_fixed()+ggtitle("All data")
@@ -183,10 +183,10 @@ ggplot(data = NULL)+
 
 ## -----------------------------------------------------------------------------
 nFolds <- 10
-X.multithin <- multithin(X, family="normal", nfolds=nFolds, arg=1)
+X.multithin <- datathin(X, family="normal", K=nFolds, arg=1)
 totalMSEs <- matrix(NA, nrow=nFolds, ncol=10)
 for (fold in 1:nFolds) {
-  Xtest <- X.multithin[[fold]]
+  Xtest <- X.multithin[,,fold]
   Xtrain <- X-Xtest
   clusters.train <- sapply(1:10, function(u) kmeans(Xtrain, centers= u)$cluster)
   totalMSEs[fold,] <- apply( clusters.train, 2, function(u) cluster.mse.datathin(Xtrain,Xtest, u, (nFolds-1)/nFolds))

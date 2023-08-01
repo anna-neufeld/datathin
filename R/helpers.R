@@ -3,7 +3,7 @@
 #' Internal function for thinning the Poisson distribution.
 #' @keywords internal
 #' @noRd
-#' 
+#'
 #' @param data dataset (assumed to follow a Poisson distribution)
 #' @param epsilon DTCC thinning parameter (simplex-valued).
 #' @importFrom stats rmultinom
@@ -16,17 +16,17 @@ poisthin <- function(data, epsilon) {
     print("Poisson data must be integer valued.")
     return()
   }
-  
+
   X <- apply(data, 1:2, function(x) rmultinom(1, x, epsilon))
   X <- aperm(X, c(2,3,1))
-  
+
   return(X)
 }
 
 #' Internal function for thinning the negative binomial distribution.
 #' @keywords internal
 #' @noRd
-#' 
+#'
 #' @param data data (assumed to follow a negative binomial distribution).
 #' @param epsilon DTCC thinning parameter (simplex-valued).
 #' @param b negative binomial overdispersion parameter.
@@ -44,10 +44,10 @@ nbthin <- function(data, epsilon, b) {
     print("Overdispersion parameter must be positive.")
     return()
   }
-  
+
   X <- mapply(function(x,y) rdirmnom(1, x, y*epsilon), data, b)
   X <- aperm(array(X, dim=c(length(epsilon),dim(data))), c(2,3,1))
-  
+
   return(X)
 }
 
@@ -56,7 +56,7 @@ nbthin <- function(data, epsilon, b) {
 #' Internal function for thinning the normal distribution.
 #' @keywords internal
 #' @noRd
-#' 
+#'
 #' @param data data (assumed to follow a normal distribution).
 #' @param epsilon DTCC thinning parameter (simplex-valued).
 #' @param sigma normal variance parameter.
@@ -66,30 +66,30 @@ normthin <- function(data, epsilon, sigma) {
     print("Variance parameter must be positive.")
     return()
   }
-  
+
   X <- mapply(function(x,y) rmvnorm(1, x*epsilon, y*(diag(epsilon) - epsilon%*%t(epsilon))), data, sigma)
   X <- aperm(array(X, dim=c(length(epsilon),dim(data))), c(2,3,1))
-  
+
   return(X)
 }
 
 #' Internal function for thinning the normal distribution with unknown variance.
 #' @keywords internal
 #' @noRd
-#' 
+#'
 #' @param data data (assumed to follow a normal distribution).
 #' @param mu normal mean parameter.
 #' @param K Number of folds.
 normvarthin <- function(data, mu, K) {
   X <- gammathin((data - mu)^2, rep(1, K)/K, matrix(1/2, nrow=nrow(data), ncol=ncol(data)))
-  
+
   return(X)
 }
 
 #' Internal function for thinning the normal distribution.
 #' @keywords internal
 #' @noRd
-#' 
+#'
 #' @param data data matrix (each row is assumed to follow a multivariate normal distribution).
 #' @param epsilon DTCC thinning parameter (simplex-valued).
 #' @param sigma multivariate normal covariance parameter.
@@ -105,25 +105,25 @@ mvnormthin <- function(data, epsilon, sigma) {
   if (dim(sigma)[2] != dim(sigma)[3]) {
     print("Sigma matrices must be square.")
   }
-  
+
   nfold <- length(epsilon)
   X <- array(0, dim=c(dim(data), nfold))
   resdat <- data
   sigma2 <- sigma
-  
+
   for (i in 1:(nfold-1)) {
-    epsfold <- epsilon[i]/sum(epsilon[i:nfold]) 
-    
+    epsfold <- epsilon[i]/sum(epsilon[i:nfold])
+
     for (j in 1:nrow(resdat)) {
       X[j,,i] <- rmvnorm(1, resdat[j,]*epsfold, epsfold*(1-epsfold)*sigma2[j,,])
       resdat[j,] <- resdat[j,] - X[j,,i]
     }
-    
+
     sigma2 <- sigma2 * (1-epsfold)
   }
-  
+
   X[,,nfold] <- resdat
-  
+
   return(X)
 }
 
@@ -132,7 +132,7 @@ mvnormthin <- function(data, epsilon, sigma) {
 #' Internal function for thinning the binomial distribution.
 #' @keywords internal
 #' @noRd
-#' 
+#'
 #' @param data data (assumed to follow a binomial distribution).
 #' @param epsilon DTCC thinning parameter (simplex-valued).
 #' @param pop binomial population parameter.
@@ -151,17 +151,17 @@ binomthin <- function(data, epsilon, pop) {
     print("Epsilon implies non-integer thinned population parameters.")
     return()
   }
-  
+
   X <- mapply(function(x,y) rmvhyper(1, y*epsilon, x), data, pop)
   X <- aperm(array(X, dim=c(length(epsilon),dim(data))), c(2,3,1))
-  
+
   return(X)
 }
 
 #' Internal function for thinning the multinomial distribution.
 #' @keywords internal
 #' @noRd
-#' 
+#'
 #' @param data data (each row is assumed to follow a multinomial distribution).
 #' @param epsilon DTCC thinning parameter (simplex-valued).
 #' @param pop multinomial population parameter (scalar-valued).
@@ -180,23 +180,23 @@ multinomthin <- function(data, epsilon, pop) {
     print("Epsilon implies non-integer thinned population parameters.")
     return()
   }
-  
+
   nfold <- length(epsilon)
   X <- array(0, dim=c(dim(data), nfold))
   resdat <- data
   pop2 <- pop
-  
+
   for (i in 1:(nfold-1)) {
-    epsfold <- epsilon[i]/sum(epsilon[i:nfold]) 
-    
+    epsfold <- epsilon[i]/sum(epsilon[i:nfold])
+
     for (j in 1:nrow(resdat)) {
       X[j,,i] <- rmvhyper(1, resdat[j,], epsfold*pop2[j])
       resdat[j,] <- resdat[j,] - X[j,,i]
     }
-    
+
     pop2 <- pop2 * (1-epsfold)
   }
-  
+
   X[,,nfold] <- resdat
 
   return(X)
@@ -207,7 +207,7 @@ multinomthin <- function(data, epsilon, pop) {
 #' Internal function for thinning the gamma distribution.
 #' @keywords internal
 #' @noRd
-#' 
+#'
 #' @param data data (assumed to follow a gamma distribution).
 #' @param epsilon DTCC thinning parameter (simplex-valued).
 #' @param shape gamma shape parameter.
@@ -221,17 +221,17 @@ gammathin <- function(data, epsilon, shape) {
     print("Shape parameter must be positive.")
     return()
   }
-  
+
   X <- mapply(function(x,y) x*rdirichlet(1, y*epsilon), data, shape)
   X <- aperm(array(X, dim=c(length(epsilon),dim(data))), c(2,3,1))
-  
+
   return(X)
 }
 
 #' Internal function for thinning the scaled chi-squared distribution into normal random variables.
 #' @keywords internal
 #' @noRd
-#' 
+#'
 #' @param data data (assumed to follow a chi-squared distribution).
 #' @param K Number of folds.
 #' @importFrom mvtnorm rmvnorm
@@ -240,17 +240,17 @@ chisqthin <- function(data, K) {
     print("Chi-squared data must be positive.")
     return()
   }
-  
+
   X <- apply(data, 1:2, function(x) {Z <- rmvnorm(1, mean=rep(0, K)); sqrt(x)*Z/sqrt(sum(Z^2))})
   X <- aperm(X, c(2,3,1))
-  
+
   return(X)
 }
 
 #' Internal function for thinning the gamma distribution into weibull random variables.
 #' @keywords internal
 #' @noRd
-#' 
+#'
 #' @param data data (assumed to follow a chi-squared distribution).
 #' @param K Number of folds.
 #' @param nu Weibull scale parameter
@@ -259,19 +259,19 @@ gammaweibullthin <- function(data, K, nu) {
     print("Weibull data must be positive.")
     return()
   }
-  
+
   X <- gammathin(data, rep(1, K)/K, matrix(K, nrow=nrow(data), ncol=ncol(data)))
   for (k in 1:K) {
     X[,,k] <- X[,,k]^(1/nu)
   }
-  
+
   return(X)
 }
 
 #' Internal function for thinning the Weibull distribution.
 #' @keywords internal
 #' @noRd
-#' 
+#'
 #' @param data data (assumed to follow a Weibull distribution).
 #' @param nu Weibull scale parameter.
 #' @param K Number of folds.
@@ -284,16 +284,16 @@ weibullthin <- function(data, nu, K) {
     print("Scale parameter must be positive.")
     return()
   }
-  
+
   X <- gammathin(data^nu, rep(1, K)/K, matrix(1, nrow=nrow(data), ncol=ncol(data)))
-  
+
   return(X)
 }
 
 #' Internal function for thinning the Pareto distribution.
 #' @keywords internal
 #' @noRd
-#' 
+#'
 #' @param data data (assumed to follow a Pareto distribution).
 #' @param nu Pareto scale parameter.
 #' @param K Number of folds.
@@ -306,20 +306,20 @@ paretothin <- function(data, nu, K) {
     print("Scale parameter must be positive.")
     return()
   }
-  
+
   X <- gammathin(log(data/nu), rep(1, K)/K, matrix(1, nrow=nrow(data), ncol=ncol(data)))
-  
+
   return(X)
 }
 
 #' Internal function for thinning the shifted exponential distribution.
 #' @keywords internal
 #' @noRd
-#' 
+#'
 #' @param data data (assumed to follow a shifted exponential distribution).
 #' @param lambda Exponential rate parameter.
 #' @param K Number of folds to generate.
-#' @importFrom extraDistr rcat 
+#' @importFrom extraDistr rcat
 #' @importFrom stats rexp
 #' @keywords internal
 #' @noRd
@@ -327,19 +327,19 @@ shiftexpthin <- function(data, lambda, K) {
   if (min(lambda) <= 0) {
     print("Rate parameter must be positive.")
     return()
-    
+
   }
-  
+
   X <- mapply(function(x,y) x + rexp(K, y/K), data, lambda)
   X <- aperm(array(X, dim=c(K,dim(data))), c(2,3,1))
   C <- matrix(rcat(prod(dim(data)), rep(1,K)/K), nrow=nrow(data))
-  
+
   for (i in 1:nrow(data)) {
     for (j in 1:ncol(data)) {
       X[i,j,C[i,j]] <- data[i,j]
     }
   }
-  
+
   return(X)
 }
 
@@ -348,7 +348,7 @@ shiftexpthin <- function(data, lambda, K) {
 #' Internal function for thinning the beta distribution into 2 gamma random variables.
 #' @keywords internal
 #' @noRd
-#' 
+#'
 #' @param data data (assumed to follow a beta distribution).
 #' @param theta The tuning parameter
 #' @param phi The sum of the beta parameters
@@ -367,28 +367,28 @@ betagammasplit <- function(data, phi, theta) {
   if (theta <= 0) {
     print("Tuning parameter must be positive.")
     return()
-  
+
   }
   X <- array(0, dim=c(dim(data), 2))
   X[,,1] <- apply(data, 1:2, function(x) rgamma(1, phi, theta/x))
   X[,,2] <- X[,,1]/data - X[,,1]
-  
+
   return(X)
-  
+
   # X[] <- rgamma(n, shape=phi, rate=theta/dmat)
   # Y <- X/Z - X
-  # 
+  #
   # return(list(Xtr = X, Xte = Y))
 }
 
 #' Internal function for thinning the scaled beta distribution.
 #' @keywords internal
 #' @noRd
-#' 
+#'
 #' @param data data (assumed to follow a scaled beta distribution).
 #' @param alpha First beta parameter.
 #' @param K Number of folds to generate.
-#' @importFrom extraDistr rcat 
+#' @importFrom extraDistr rcat
 #' @importFrom stats rbeta
 #' @keywords internal
 #' @noRd
@@ -400,20 +400,20 @@ scaledbetathin <- function(data, alpha, K) {
   if (min(alpha) <= 0) {
     print("First beta parameter must be positive.")
     return()
-    
+
   }
-  
+
   X <- mapply(function(x,y) x*rbeta(K, y/K, 1), data, alpha)
   X <- aperm(array(X, dim=c(K,dim(data))), c(2,3,1))
-  
+
   C <- matrix(rcat(prod(dim(data)), rep(1,K)/K), nrow=nrow(data))
-  
+
   for (i in 1:nrow(data)) {
     for (j in 1:ncol(data)) {
       X[i,j,C[i,j]] <- data[i,j]
     }
   }
-  
+
   return(X)
 }
 
