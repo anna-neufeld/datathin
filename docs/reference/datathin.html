@@ -62,6 +62,51 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">datathin</span><span class="op">(</span><span class="va">data</span>, <span class="va">family</span>, K <span class="op">=</span> <span class="fl">2</span>, epsilon <span class="op">=</span> <span class="cn">NULL</span>, arg <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
+    <div id="arguments">
+    <h2>Arguments</h2>
+    <dl><dt>data</dt>
+<dd><p>A scalar, vector, or matrix of data.</p></dd>
+
+
+<dt>family</dt>
+<dd><p>The distribution of the data. Options are "poisson", "negative binomial", "normal" (or "gaussian"),
+"normal-variance" (or "gaussian-variance"), "mvnormal" (or "mvgaussian"), "binomial", "multinomial", "exponential",
+"gamma", "chi-squared", "gamma-weibull", "weibull", "pareto", "shifted-exponential", "scaled-uniform", "scaled-beta".</p></dd>
+
+
+<dt>K</dt>
+<dd><p>The number of folds. Note that for the "chi-squared" and "gamma-weibull" decompositions, the number of folds implies the
+degrees of freedom and shape parameters respectively.</p></dd>
+
+
+<dt>epsilon</dt>
+<dd><p>The tuning parameter for convolution-closed data thinning; must be a simplex vector of length K. Larger values
+correspond to more information in the respective fold. Available for "poisson", "negative binomial", "normal" (or "gaussian"),
+"mvnormal" (or "mvgaussian"), "binomial", "multinomial", "exponential", and "gamma" families. If epsilon is not supplied,
+rep(1/K, K) is used.</p></dd>
+
+
+<dt>arg</dt>
+<dd><p>The extra parameter that must be known in order to thin. Either a scalar or a matrix with the same dimensions as data
+(excluding "mvnormal" (or "mvgaussian") and "multinomial" families; see below).
+Requirements vary by decomposition:</p><ul><li><p>Not needed for "poisson", "exponential", "chi-squared", or "scaled-uniform" distributions.</p></li>
+<li><p>"negative binomial" requires the size parameter.</p></li>
+<li><p>"normal" (or "gaussian") requires the variance.</p></li>
+<li><p>"normal-variance" (or "gaussian-variance") requires the mean.</p></li>
+<li><p>"mvnormal" (or "mvgaussian") requires the covariance matrix. If the dimensions of data are nxp, arg must be nxpxp.</p></li>
+<li><p>"binomial" and "multinomial" require the number of trials. For "multinomial", if the dimensions of data are nxp, arg must be a
+vector of length n.</p></li>
+<li><p>"gamma", "gamma-weibull", and "weibull" requires the shape parameter.</p></li>
+<li><p>"pareto" requires the location paramter.</p></li>
+<li><p>"shifted-exponential" requires the rate parameter.</p></li>
+<li><p>"scaled-beta" requires the first shape parameter.</p></li>
+</ul><p>Please refer to <a href="https://arxiv.org/abs/2301.07276" class="external-link">https://arxiv.org/abs/2301.07276</a> and <a href="https://arxiv.org/abs/2303.12931" class="external-link">https://arxiv.org/abs/2303.12931</a> for further details.</p></dd>
+
+</dl></div>
+    <div id="details">
+    <h2>Details</h2>
+    <p>See <a href="https://anna-neufeld.github.io/datathin/articles/introduction_tutorial.html">https://anna-neufeld.github.io/datathin/articles/introduction_tutorial.html</a> for examples of each decomposition.</p>
+    </div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

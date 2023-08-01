@@ -6,6 +6,43 @@
 \usage{
 datathin(data, family, K = 2, epsilon = NULL, arg = NULL)
 }
+\arguments{
+\item{data}{A scalar, vector, or matrix of data.}
+
+\item{family}{The distribution of the data. Options are "poisson", "negative binomial", "normal" (or "gaussian"),
+"normal-variance" (or "gaussian-variance"), "mvnormal" (or "mvgaussian"), "binomial", "multinomial", "exponential",
+"gamma", "chi-squared", "gamma-weibull", "weibull", "pareto", "shifted-exponential", "scaled-uniform", "scaled-beta".}
+
+\item{K}{The number of folds. Note that for the "chi-squared" and "gamma-weibull" decompositions, the number of folds implies the
+degrees of freedom and shape parameters respectively.}
+
+\item{epsilon}{The tuning parameter for convolution-closed data thinning; must be a simplex vector of length K. Larger values
+correspond to more information in the respective fold. Available for "poisson", "negative binomial", "normal" (or "gaussian"),
+"mvnormal" (or "mvgaussian"), "binomial", "multinomial", "exponential", and "gamma" families. If epsilon is not supplied,
+rep(1/K, K) is used.}
+
+\item{arg}{The extra parameter that must be known in order to thin. Either a scalar or a matrix with the same dimensions as data
+(excluding "mvnormal" (or "mvgaussian") and "multinomial" families; see below).
+Requirements vary by decomposition:
+\itemize{
+\item Not needed for "poisson", "exponential", "chi-squared", or "scaled-uniform" distributions.
+\item "negative binomial" requires the size parameter.
+\item "normal" (or "gaussian") requires the variance.
+\item "normal-variance" (or "gaussian-variance") requires the mean.
+\item "mvnormal" (or "mvgaussian") requires the covariance matrix. If the dimensions of data are nxp, arg must be nxpxp.
+\item "binomial" and "multinomial" require the number of trials. For "multinomial", if the dimensions of data are nxp, arg must be a
+vector of length n.
+\item "gamma", "gamma-weibull", and "weibull" requires the shape parameter.
+\item "pareto" requires the location paramter.
+\item "shifted-exponential" requires the rate parameter.
+\item "scaled-beta" requires the first shape parameter.
+}
+
+Please refer to \url{https://arxiv.org/abs/2301.07276} and \url{https://arxiv.org/abs/2303.12931} for further details.}
+}
 \description{
 Takes a dataset (scalar, vector, or matrix) and returns a training set and a test set that sum to the original data matrix.
+}
+\details{
+See \url{https://anna-neufeld.github.io/datathin/articles/introduction_tutorial.html} for examples of each decomposition.
 }
