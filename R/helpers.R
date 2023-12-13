@@ -180,25 +180,23 @@ multinomthin <- function(data, epsilon, pop) {
     print("Epsilon implies non-integer thinned population parameters.")
     return()
   }
-
+  
   nfold <- length(epsilon)
-  X <- array(0, dim=c(dim(data), nfold))
+  X <- array(0, dim = c(dim(data), nfold))
   resdat <- data
   pop2 <- pop
-
-  for (i in 1:(nfold-1)) {
-    epsfold <- epsilon[i]/sum(epsilon[i:nfold])
-
-    for (j in 1:nrow(resdat)) {
-      X[j,,i] <- rmvhyper(1, resdat[j,], epsfold*pop2[j])
-      resdat[j,] <- resdat[j,] - X[j,,i]
+  
+  for (j in 1:nrow(resdat)) {
+    pop2 <- pop[j]*epsilon
+    
+    for (i in 1:(nfold - 1)) {
+      X[j, , i] <- rmvhyper(1, resdat[j, ], pop2[i])
+      resdat[j, ] <- resdat[j, ] - X[j, , i]
     }
-
-    pop2 <- pop2 * (1-epsfold)
   }
-
-  X[,,nfold] <- resdat
-
+  
+  X[, , nfold] <- resdat
+  
   return(X)
 }
 
