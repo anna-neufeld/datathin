@@ -75,27 +75,29 @@
 <div class="section level2">
 <h2 id="what-is-datathin">What is datathin?<a class="anchor" aria-label="anchor" href="#what-is-datathin"></a>
 </h2>
-<p>The <code>datathin</code> R package splits a random variable (or a vector or matrix of random variables) into an independent training set and a test set using the methodology introduced in Neufeld et al., 2023 <a href="https://arxiv.org/abs/2301.07276" class="external-link">(link to preprint)</a>.</p>
+<p>The <code>datathin</code> R package splits a random variable (or a vector or matrix of random variables) into an independent training set and a test set using the methodology developed in Neufeld et al., 2024 <a href="https://www.jmlr.org/papers/volume25/23-0446/23-0446.pdf" class="external-link">(link to paper)</a> and Dharamshi et al., 2024 <a href="https://arxiv.org/abs/2303.12931" class="external-link">(link to preprint)</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="how-can-i-get-datathin">How can I get datathin?<a class="anchor" aria-label="anchor" href="#how-can-i-get-datathin"></a>
 </h2>
 <p>Make sure that <code>remotes</code> is installed by running <code>install.packages("remotes")</code>, then type</p>
-<pre class="{r}"><code><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"anna-neufeld/datathin"</span><span class="op">)</span></span></code></pre>
+<p><code>{r} remotes::install_github("anna-neufeld/datathin")</code></p>
 </div>
 <div class="section level2">
 <h2 id="where-can-i-learn-more">Where can I learn more?<a class="anchor" aria-label="anchor" href="#where-can-i-learn-more"></a>
 </h2>
 <p>For now, you can check our our <a href="articles/introduction_tutorial.html">introductory tutorial</a>, which gives basic examples of how to apply data thinning under a variety of distributional assumptions. You can also check out our <a href="articles/unsupervised_tutorial.html">unsupervised learning tutorial</a>, which shows how data thinning can be applied to estimate the number of clusters in normally distributed data.</p>
 <p>More tutorials for this package are coming soon! We will provide examples of how to use <code>datathin</code> for tasks such as model evaluation and inference after model selection under a variety of distributional assumptions.</p>
-<p>To learn more, check out <a href="https://arxiv.org/abs/2301.07276" class="external-link">our preprint</a>.</p>
-<p>To reproduce the figures from our preprint, please see the following repository: <a href="https://github.com/anna-neufeld/datathin_paper" class="external-link">https://github.com/anna-neufeld/datathin_paper</a>.</p>
-<p>The scRNA-seq dataset analyzed in our paper is available for free from <a href="https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz" class="external-link">10X genomics</a>, and is also included in the R package <a href="https://anna-neufeld.github.io/countsplit/" class="external-link">countsplit</a>.</p>
+<p>To learn more, check out our papers linked above!</p>
+<p>To reproduce the figures from Neufeld et al., please see the following repository: <a href="https://github.com/anna-neufeld/datathin_paper" class="external-link">https://github.com/anna-neufeld/datathin_paper</a>.</p>
+<p>The scRNA-seq dataset analyzed in Neufeld et al. is available for free from <a href="https://cf.10xgenomics.com/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz" class="external-link">10X genomics</a>, and is also included in the R package <a href="https://anna-neufeld.github.io/countsplit/" class="external-link">countsplit</a>.</p>
+<p>To reproduce the figures from Dharamshi et al., please see the following repository: <a href="https://github.com/AmeerD/gdt-experiments" class="external-link">https://github.com/AmeerD/gdt-experiments</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<p>Neufeld, A.,Dharamshi, A., Gao, L.L. &amp; Witten, D. (2023), ‘Data thinning for convolution-closed distributions’. arXiv:2301.07276.</p>
+<p>Neufeld, A., Dharamshi, A., Gao, L. L., &amp; Witten, D. (2024). Data thinning for convolution-closed distributions. Journal of Machine Learning Research, 25(57), 1-35.</p>
+<p>Dharamshi, A., Neufeld, A., Motwani, K., Gao, L. L., Witten, D., &amp; Bien, J. (2024). Generalized data thinning using sufficient statistics. To appear in: Journal of the American Statistical Association.</p>
 </div>
 
   </div>
